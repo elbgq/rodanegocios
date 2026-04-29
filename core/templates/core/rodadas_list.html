@@ -1,0 +1,70 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block content %}
+
+<h2>Rodadas do Evento: {{ evento.nome }}</h2>
+<h4>Data do Evento: {{ evento.data }}</h4>
+
+<a href="{% url 'core:evento_list' %}" class="btn btn-secondary mb-3">
+    Voltar
+</a>
+
+<table class="table table-striped table-hover align-middle">
+    <thead class="table-dark">
+        <tr>
+            <th>Nome</th>
+            <th>Duração</th>
+            <th>Início</th>
+            <th>Fim</th>
+            <th>Mesas</th>
+            <th style="width: 260px;">Ações</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        {% for rodada in rodadas %}
+        <tr>
+            <td>{{ rodada.nome }}</td>
+            <td>{{ rodada.duracao }} min</td>
+            <td>{{ rodada.inicio_ro|time:'H:i' }}</td>
+            <td>{{ rodada.fim_ro|time:'H:i' }}</td>
+
+            <!-- Ajuste importante: mesa_set -->
+            <td>{{ rodada.mesas.count }}</td>
+
+            <td class="text-center align-middle">
+
+                <!-- Ver Mesas -->
+                <a href="{% url 'core:mesas_da_rodada' rodada.id %}"
+                   class="btn btn-outline-primary btn-sm">
+                    Mesas
+                </a>
+                <!-- Painel -->
+                <a href="{% url 'core:painel_rodada' rodada.id %}"
+                   class="btn btn-outline-success btn-sm">
+                    Painel
+                </a>
+                <!-- Editar -->
+                <a href="{% url 'core:rodadas_editar' rodada.id %}"
+                   class="btn btn-outline-warning btn-sm">
+                    Editar
+                </a>
+
+                <!-- Excluir -->
+                <a href="{% url 'core:rodadas_excluir' rodada.id %}"
+                   class="btn btn-outline-danger btn-sm"
+                   onclick="return confirm('Tem certeza que deseja excluir esta rodada?');">
+                    Excluir
+                </a>
+            </td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="6" class="text-center">Nenhuma rodada cadastrada.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% endblock %}

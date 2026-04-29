@@ -1,0 +1,43 @@
+{% extends "core/base.html" %}
+
+{% block content %}
+<h2>Relacionamentos de {{ empresa.nome }}</h2>
+
+<a href="{% url 'core:empresa_adicionar_relacionamento' empresa.id %}" class="btn btn-primary mb-3">
+    Adicionar relacionamento
+</a>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Empresa</th>
+            <th>Tipo</th>
+            <th>Ações</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for rel in relacoes %}
+            <tr>
+                <td>
+                    {% if rel.empresa_a == empresa %}
+                        {{ rel.empresa_b.nome }}
+                    {% else %}
+                        {{ rel.empresa_a.nome }}
+                    {% endif %}
+                </td>
+                <td>{{ rel.get_tipo_relacao_display }}</td>
+                <td>
+                    <a href="{% url 'core:remover_relacionamento' empresa.id rel.id %}"
+                       class="btn btn-danger btn-sm">
+                        Remover
+                    </a>
+                </td>
+            </tr>
+        {% empty %}
+            <tr><td colspan="3">Nenhum relacionamento cadastrado.</td></tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<a href="{% url 'core:empresa_list' %}" class="btn btn-secondary">Voltar</a>
+{% endblock %}

@@ -1,0 +1,25 @@
+{% extends "core/base.html" %}
+{% load static %}
+{% block content %}
+
+<h2>Excluir Empresa</h2>
+
+<p>Tem certeza que deseja excluir a empresa abaixo?</p>
+
+<ul>
+    <li><strong>Nome:</strong> {{ empresa.nome }}</li>
+    <li><strong>Modalidade:</strong> {{ empresa.modalidade }}</li>
+    {% if empresa.endereco %}
+        <li><strong>Cidade:</strong> {{ empresa.endereco.cidade }}</li>
+        <li><strong>Estado:</strong> {{ empresa.endereco.estado }}</li>
+        <li><strong>País:</strong> {{ empresa.endereco.pais }}</li>
+    {% endif %}
+</ul>
+
+<form method="post">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-danger">Confirmar exclusão</button>
+    <a href="{% url 'core:empresa_list' %}" class="btn btn-secondary">Cancelar</a>
+</form>
+
+{% endblock %}

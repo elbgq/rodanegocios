@@ -1,0 +1,50 @@
+{% extends "core/base.html" %}
+{% load static %}
+{% block content %} 
+
+{% if messages %}
+    {% for message in messages %}
+        <div class="alert alert-{{ message.tags }}">
+            {{ message }}
+        </div>
+    {% endfor %}
+{% endif %}
+
+<h2>Confirmar Geração das Rodadas — {{ evento.nome }}</h2>
+
+<div class="alert alert-warning">
+    <strong>Atenção!</strong> Após gerar as rodadas, não será possível alterar os participantes.
+</div>
+
+<h4>Resumo dos Participantes</h4>
+
+<ul class="list-group mb-3">
+    <li class="list-group-item">
+        Compradores inscritos: <strong>{{ compradores.count }}</strong>
+    </li>
+    <li class="list-group-item">
+        Vendedores inscritos: <strong>{{ vendedores.count }}</strong>
+    </li>
+    <li class="list-group-item">
+        Total de inscritos: <strong>{{ compradores.count|add:vendedores.count }}</strong>
+    </li>
+</ul>
+
+{% if nao_inscritas %}
+<div class="alert alert-info">
+    <strong>Empresas não inscritas:</strong>
+    <ul>
+        {% for emp in nao_inscritas %}
+        <li>{{ emp.nome }} ({{ emp.modalidade }})</li>
+        {% endfor %}
+    </ul>
+</div>
+{% endif %}
+
+<form method="post" action="{% url 'core:rodadas_processar' evento.id %}">
+    {% csrf_token %}
+    <button class="btn btn-success">Confirmar e Gerar Rodadas</button>
+    <a href="{% url 'core:evento_participantes' evento.id %}" class="btn btn-secondary">Voltar</a>
+</form>
+
+{% endblock %}

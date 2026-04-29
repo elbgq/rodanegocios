@@ -1,0 +1,71 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block content %}
+{% if messages %}
+    {% for message in messages %}
+        <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+    {% endfor %}
+{% endif %}
+<h2>Gerar Rodadas para {{ evento.nome }}</h2>
+<h6>Data: {{ evento.data }} - Hora Início: {{ evento.inicio_ev }} Hs</h6>
+
+<a href="{% url 'core:evento_list' %}" class="btn btn-secondary mb-3">Voltar</a>
+
+<form method="POST" class="mt-4">
+    {% csrf_token %}
+
+    <div class="row">
+        <div class="col-md-4 mb-3">
+            <label class="form-label">Quantidade de mesas:</label>
+            <input type="number" name="qtd_mesas" class="form-control" required>
+        </div>
+
+        <div class="col-md-4 mb-3">
+            <label class="form-label">Quantidade de rodadas:</label>
+            <input type="number" name="qtd_rodadas" class="form-control" required min="1">
+        </div>
+
+        <div class="col-md-4 mb-3">
+            <label class="form-label">Duração de cada rodada:</label>
+            <select name="duracao" class="form-select">
+                {% for valor, label in duracoes %}
+                    <option value="{{ valor }}">{{ label }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="col-md-4 mb-3">
+            <label class="form-label">Início das rodadas:</label>
+            <input type="time" name="inicio_rodadas" class="form-control" required>
+        </div>
+    </div>
+
+    <hr>
+
+    <h5>Intervalos e Pausas</h5>
+
+    <div class="row">
+        <div class="col-md-4 mb-3">
+            <label class="form-label">Intervalo entre rodadas (min):</label>
+            <input type="number" name="intervalo" class="form-control" value="0" min="0">
+        </div>
+
+        <div class="col-md-4 mb-3">
+            <label class="form-label">Pausa a cada X rodadas:</label>
+            <input type="number" name="pausa_cada" class="form-control" value="0" min="0">
+        </div>
+
+        <div class="col-md-4 mb-3">
+            <label class="form-label">Duração da pausa (min):</label>
+            <input type="number" name="pausa_duracao" class="form-control" value="0" min="0">
+        </div>
+    </div>
+
+    <button type="submit" name="modo" value="ranking" class="btn btn-success mt-3">
+        Gerar Rodadas por Ranking
+    </button>
+
+</form>
+
+{% endblock %}

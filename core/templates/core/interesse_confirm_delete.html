@@ -1,0 +1,18 @@
+{% extends 'core/base.html' %}
+
+{% block content %}
+<h2 class="mb-4">Excluir Interesse</h2>
+
+<p>Tem certeza que deseja excluir o interesse <strong>{{ object.nome }}</strong>?</p>
+
+<p class="text-danger">
+    Esta ação não pode ser desfeita.
+</p>
+
+<form method="post">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-danger">Excluir</button>
+    <a href="{% url 'core:interesse_list' %}" class="btn btn-secondary">Cancelar</a>
+</form>
+
+{% endblock %}

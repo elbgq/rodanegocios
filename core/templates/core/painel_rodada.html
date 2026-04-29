@@ -1,0 +1,128 @@
+{% extends "core/base.html" %}
+{% load static %}
+
+{% block content %}
+
+<h2 class="mb-3">Painel da Rodada: {{ rodada.nome }}</h2>
+<h4 class="text-muted">Evento: {{ rodada.evento.nome }}</h4>
+
+<div class="mb-4">
+    <span class="badge bg-primary fs-6">
+        {{ rodada.evento.data|date:"d/M/Y" }}
+    </span>
+    <span class="badge bg-secondary fs-6">
+        {{ rodada.inicio_ro|time:"H:i" }} - {{ rodada.fim_ro|time:"H:i" }}
+    </span>
+    <span class="badge bg-info fs-6">
+        {{ rodada.duracao }} min por reunião
+    </span>
+</div>
+
+<a href="{% url 'core:rodadas_list' rodada.evento.id %}" class="btn btn-secondary mb-4">
+    Voltar
+</a>
+
+<!-- Indicadores -->
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card text-center shadow-sm">
+            <div class="card-body">
+                <h5>Total de Mesas</h5>
+                <p class="fs-3">{{ total_mesas }}</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card text-center shadow-sm">
+            <div class="card-body">
+                <h5>Reservas</h5>
+                <p class="fs-3">{{ total_reservas }}</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card text-center shadow-sm">
+            <div class="card-body">
+                <h5>Ocupação</h5>
+                <p class="fs-3">{{ ocupacao_percentual }}%</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card text-center shadow-sm">
+            <div class="card-body">
+                <h5>Empresas sem Reserva</h5>
+                <p class="fs-3">{{ empresas_sem_reserva.count }}</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Mesas -->
+<h3 class="mt-4">Mesas</h3>
+
+<table class="table table-striped table-hover align-middle">
+    <thead class="table-dark">
+        <tr>
+            <th>Nº Mesa</th>
+            <th>Comprador</th>
+            <th>Vendedor</th>
+            <th>Status</th>
+            <th style="width: 150px;">Ações</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        {% for mesa in mesas %}
+        <tr>
+            <td>{{ mesa.numero }}</td>
+            <td>{{ mesa.comprador.nome }}</td>
+            <td>{{ mesa.vendedor.nome }}</td>
+            <td>
+            <span class="badge bg-{{ mesa.status }}">
+                {{ mesa.status|title }}
+            </span>
+            </td>
+            
+            <td>
+                <a href="{% url 'core:mesa_relatorio' mesa.id %}"
+                   class="btn btn-sm btn-outline-success">
+                    Afinidades
+                </a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<!-- Empresas sem reserva -->
+<h3 class="mt-5">Empresas sem Reserva</h3>
+
+<table class="table table-striped table-hover align-middle">
+    <thead class="table-dark">
+        <tr>
+            <th>Empresa</th>
+            <th>Modalidade</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        {% for empresa in empresas_sem_reserva %}
+        <tr>
+            <td>{{ empresa.nome }}</td>
+            <td>{{ empresa.modalidade }}</td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="2" class="text-center text-muted">
+                Todas as empresas já reservaram mesa.
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% endblock %}

@@ -1,0 +1,33 @@
+{% extends 'core/base.html' %}
+{% load static %}
+{% block content %}
+<h2>Resetar senha</h2>
+
+{% if erro %}
+<div class="alert alert-danger">{{ erro }}</div>
+{% endif %}
+
+{% if sucesso %}
+<div class="alert alert-success">{{ sucesso }}</div>
+{% endif %}
+
+<form method="post">
+    {% csrf_token %}
+
+    {% if modo != "esqueci" %}
+    <div class="mb-3">
+        <label class="form-label">Senha atual</label>
+        <input type="password" name="senha_atual" class="form-control" required>
+    </div>
+    {% endif %}
+
+    <label>Nova senha</label>
+    <input type="password" name="nova_senha" class="form-control">
+
+    <label>Confirmar nova senha</label>
+    <input type="password" name="confirmar" class="form-control">
+
+    <button class="btn btn-primary mt-3">Salvar nova senha</button>
+</form>
+
+{% endblock %}

@@ -1,0 +1,56 @@
+{% extends "core/base.html" %}
+{% load static %}
+{% block content %}
+
+<h4>Agendas das Empresas — {{ evento.nome }}</h4>
+<p><strong>Data:</strong> {{ evento.data }}</p>
+
+<p><strong>Local:</strong> {{ evento.local }}</p>
+
+
+<table class="table table-striped mt-4">
+    <thead>
+        <tr>
+            <th>Empresa</th>
+            <th>Modalidade</th>
+            <th>Rodadas</th>
+            <th>Agenda</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for empresa in empresas %}
+            <tr>
+                <td>{{ empresa.nome }}</td>
+                <td>
+                    {% if empresa.modalidade == "COMPRADOR" %}
+                        <span class="badge bg-success ms-2">COMPRADOR</span>
+                    {% else %}
+                        <span class="badge bg-primary ms-2">VENDEDOR</span>
+                    {% endif %}
+                </td>
+                <td>
+                    <span class="badge bg-outline-dark text-primary">
+                        {{ empresa.total_rodadas }}
+                    </span>
+                </td>
+                <td> 
+                    {% if empresa.modalidade == "COMPRADOR" %}
+                        <a href="{% url 'core:agenda_comprador' evento.id empresa.id %}"
+                           class="btn btn-outline-success btn-sm">
+                            Agenda do comprador
+                        </a>
+                    {% else %}
+                        <a href="{% url 'core:agenda_vendedor' evento.id empresa.id %}"
+                           class="btn btn-outline-primary btn-sm">
+                            Agenda do vendedor
+                        </a>
+                    {% endif %}
+                </td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<a href="{% url 'core:evento_detail' evento.id %}" class="btn btn-secondary mt-3">Voltar</a>
+
+{% endblock %}

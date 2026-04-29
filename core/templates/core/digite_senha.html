@@ -1,0 +1,31 @@
+{% extends "core/base.html" %}
+{% load static %}
+{% block content %}
+
+<div class="container mt-5" style="max-width: 400px;">
+    <div class="card p-4">
+        <h4 class="text-center mb-3">Acesso Restrito</h4>
+
+        {% if erro %}
+            <div class="alert alert-danger">{{ erro }}</div>
+        {% endif %}
+
+        <form method="POST">
+            {% csrf_token %}
+            <div class="mb-3">
+                <label class="form-label">Senha de acesso</label>
+                <input type="password" name="senha" class="form-control" required>
+            </div>
+
+            <button class="btn btn-primary w-100">Entrar</button>
+        </form>
+        <!--
+        <div class="text-center mt-3">
+            <a href="/reset-senha/?modo=esqueci" class="btn btn-link text-primary">
+                Esqueci a senha
+            </a>
+        </div>
+        -->
+    </div>
+</div>
+{% endblock %}

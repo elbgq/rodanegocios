@@ -1,0 +1,14 @@
+{% extends "core/base.html" %}
+{% load static %}
+{% block content %}
+<h2>Excluir Representante</h2>
+
+<p>Tem certeza que deseja excluir <strong>{{ object.nome }}</strong>?</p>
+
+<form method="post">
+    {% csrf_token %}
+    <button class="btn btn-danger">Excluir</button>
+    <a href="{% url 'core:empresa_detail' object.empresa.id %}" class="btn btn-secondary">Cancelar</a>
+</form>
+
+{% endblock %}

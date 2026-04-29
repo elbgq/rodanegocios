@@ -1,0 +1,50 @@
+{% extends 'core/base.html' %}
+{% load static %}
+{% block content %}
+<h2>Eventos</h2>
+
+<a href="{% url 'core:evento_create' %}" class="btn btn-primary mb-3">Novo Evento</a>
+
+<table class="table table-striped table-hover align-middle">
+    <thead class="table-dark">
+        <tr>
+            <th>Nome</th>
+            <th>Data</th>
+            <th>Local</th>
+            <th>Início</th>
+            <th>Termino</th>
+            <th>Ações</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for evento in eventos %}
+        <tr>
+            <td>{{ evento.nome }}</td>
+            <td>{{ evento.data }}</td>
+            <td>{{ evento.local }}</td>
+            <td>{{ evento.inicio_ev }}</td>
+            <td>{{ evento.termino_ev }}</td>
+            <td class="text-center align-middle">
+                <a href="{% url 'core:evento_detail' evento.id %}" class="btn btn-sm btn-outline-info">
+                    Detalhes</a>
+                <a href="{% url 'core:evento_update' evento.id %}" class="btn btn-sm btn-outline-warning">
+                    Editar</a>
+                
+                {% if evento.rodadas.exists %}
+                    <a href="{% url 'core:rodadas_list' evento.id %}" class="btn btn-sm btn-outline-success">
+                        Rodadas</a>
+                    
+                {% else %}
+                    <a href="{% url 'core:evento_participantes' evento.id %}" class="btn btn-sm btn-outline-success">
+                        Gerenciar Participantes das Rodadas</a>
+                {% endif %}
+                    <a href="{% url 'core:evento_confirm_delete' evento.id %}" class="btn btn-sm btn-outline-danger">
+                    Excluir</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+<a href="{% url 'core:home' %}" class="btn btn-secondary">Voltar</a>
+
+{% endblock %}

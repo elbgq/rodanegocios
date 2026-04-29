@@ -1,0 +1,50 @@
+body {
+    background-color: #bdf1e2; /* seu verde claro */
+}
+
+
+.container {
+    background-color: #bdf1e2 !important; /* igual ao body */
+    padding: 20px;
+    border-radius: 8px;
+}
+header {
+    margin-bottom: 20px;
+}
+
+nav a {
+    margin-right: 10px;
+}
+
+.navbar {
+    color: #0b2e13 !important; /* verde bem escuro */
+    font-weight: 600;
+}
+.navbar-dark .navbar-toggler-icon {
+    background-image: url("data:image/svg+xml;charset=utf8,%3Csvg viewBox='0 0 30 30' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath stroke='rgba%28255,255,255,1%29' stroke-width='2' stroke-linecap='round' stroke-miterlimit='10' d='M4 7h22M4 15h22M4 23h22'/%3E%3C/svg%3E");
+}
+
+.card {
+    background-color: #7fcdf1 !important;
+}
+.home-bg {
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    min-height: 80vh;
+}
+
+span.badge.bg-completa {
+    background-color: #28a745 !important; /* verde */
+    color: white !important;
+}
+
+span.badge.bg-vaga {
+    background-color: #ffc107 !important; /* amarelo */
+    color: black !important;
+}
+
+span.badge.bg-vazia {
+    background-color: #6c757d !important; /* cinza */
+    color: white !important;
+}

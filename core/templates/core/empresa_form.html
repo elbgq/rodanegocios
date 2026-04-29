@@ -1,0 +1,227 @@
+{% extends 'core/base.html' %}
+{% load static %}
+{% load form_filters %}
+{% block content %}
+
+<h2 class="text-primary">Cadastro de Empresa</h2>
+{% if form.errors %}
+<div class="alert alert-danger">
+    <strong>Erros no formulário da empresa:</strong>
+    <ul>
+        {% for field, errors in form.errors.items %}
+            <li><strong>{{ field }}:</strong> {{ errors|join:", " }}</li>
+        {% endfor %}
+    </ul>
+</div>
+{% endif %}
+
+{% if form_endereco.errors %}
+<div class="alert alert-danger">
+    <strong>Erros no endereço:</strong>
+    <ul>
+        {% for field, errors in form_endereco.errors.items %}
+            <li><strong>{{ field }}:</strong> {{ errors|join:", " }}</li>
+        {% endfor %}
+    </ul>
+</div>
+{% endif %}
+
+<form method="post" class="mt-3">
+    {% csrf_token %}
+    {% if next %}
+        <input type="hidden" name="next" value="{{ next }}">
+    {% endif %}
+
+
+    <!-- ========================= -->
+    <!-- DADOS DA EMPRESA          -->
+    <!-- ========================= -->
+    <div class="row">
+        <!-- Nome -->
+        <div class="col-md-6 mb-3">
+            <label class="form-label">Nome</label>
+            {{ form.nome }}
+        </div>
+
+        <!-- Modalidade -->
+        <div class="col-md-6 mb-3">
+            <label class="form-label">Modalidade</label>
+            {{ form.modalidade }}
+        </div>
+    </div>
+    <div class="row">
+        <!-- CNPJ -->
+        <div class="col-md-6 mb-3">
+            <label class="form-label">CNPJ</label>
+            {{ form.cnpj }}
+        </div>
+
+        <!-- Segmento -->
+        <div class="col-md-6 mb-3">
+            <label class="form-label">Segmento</label>
+            {{ form.segmento }}
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Site -->
+        <div class="col-md-6 mb-3">
+            <label class="form-label">Site</label>
+            {{ form.site }}
+        </div>
+
+    </div>
+    <!-- ========================= -->
+    <!-- ENDEREÇO                  -->
+    <!-- ========================= -->
+    <h4 class="mt-4 text-primary">Endereço</h4>
+
+    <div class="row">
+        <div class="col-md-8 mb-3">
+            <label class="form-label">Rua</label>
+            {{ form_endereco.rua }}
+        </div>
+
+        <div class="col-md-4 mb-3">
+            <label class="form-label">Número</label>
+            {{ form_endereco.numero }}
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-4 mb-3">
+            <label class="form-label">Complemento</label>
+            {{ form_endereco.complemento }}
+        </div>
+
+        <div class="col-md-4 mb-3">
+            <label class="form-label">Bairro</label>
+            {{ form_endereco.bairro }}
+        </div>
+
+        <div class="col-md-4 mb-3">
+            <label class="form-label">CEP</label>
+            {{ form_endereco.cep }}
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-5 mb-3">
+            <label class="form-label">Cidade</label>
+            {{ form_endereco.cidade }}
+        </div>
+
+        <div class="col-md-3 mb-3">
+            <label class="form-label">Estado</label>
+            {{ form_endereco.estado }}
+        </div>
+
+        <div class="col-md-4 mb-3">
+            <label class="form-label">País</label>
+            {{ form_endereco.pais }}
+        </div>
+    </div>
+
+    <!-- ========================= -->
+    <!-- INTERESSES AGRUPADOS      -->
+    <!-- ========================= -->
+
+    <div class="mb-4">
+        <h4 class="form-label text-primary">Interesses</h4>
+
+        {% for categoria in categorias_interesses %}
+            
+            <h6 class="mt-3 text-info">{{ categoria }}</h6>
+
+            <div class="row">
+                {% for interesse in interesses_por_categoria|get_item:categoria %}
+                    <div class="col-md-4">
+                        <div class="form-check">
+
+                            <input type="checkbox"
+                                name="interesses"
+                                value="{{ interesse.id }}"
+                                class="form-check-input"
+                                {% if interesse in form.instance.interesses.all %}checked{% endif %}
+
+                            <label class="form-check-label">
+                                {{ interesse.nome }}
+                            </label>
+
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+
+        {% endfor %}
+    
+{% if form.instance.id %}
+    <h4 class="form-label text-primary mb-2">Relacionamentos</h4>
+
+    <a href="{% url 'core:empresa_relacionamentos' form.instance.id %}" class="btn btn-outline-primary">
+        Gerenciar relacionamentos desta empresa
+    </a>
+    {% if relacionamentos %}
+        <ul class="mt-3">
+            {% for rel in relacionamentos %}
+                <li>
+                    {% if rel.empresa_a == empresa %}
+                        {{ rel.empresa_b.nome }}
+                    {% else %}
+                        {{ rel.empresa_a.nome }}
+                    {% endif %}
+                    — <em>{{ rel.get_tipo_relacao_display }}</em>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p class="text-muted mt-2">Nenhum relacionamento cadastrado.</p>
+    {% endif %}
+{% endif %}
+
+    </div>
+
+    <button type="submit" class="btn btn-primary">Salvar</button>
+</form>
+
+<br>
+
+<div class="mb-3">
+    <a href="{% url 'core:interesse_list' %}" class="btn btn-outline-secondary">
+        Gerenciar interesses
+    </a>
+
+    {% if next %}
+        <a href="{{ next }}" class="btn btn-secondary">Voltar</a>
+    {% else %}
+        <a href="{% url 'core:empresa_list' %}" class="btn btn-secondary">Voltar</a>
+    {% endif %}
+
+    <a href="{% url 'core:empresa_create' %}" class="btn btn-success">
+        Novo cadastro
+    </a>
+</div>
+
+<!-- Máscaras para CNPJ e CEP -->
+
+<script src="https://unpkg.com/imask"></script>
+
+<script>
+    const cnpjField = document.getElementById("id_cnpj");
+
+    if (cnpjField) {
+        IMask(cnpjField, {
+            mask: "00.000.000/0000-00"
+        });
+    }
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.min.js"></script>
+
+<script>
+$(document).ready(function(){
+    $('#id_cnpj').mask('00.000.000/0000-00');
+    $('#id_cep').mask('00000-000');
+});
+</script>
+
+{% endblock %}

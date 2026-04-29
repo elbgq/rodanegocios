@@ -1,0 +1,19 @@
+{% extends "core/base.html" %}
+{% load static %}
+{% block content %}
+
+<h3>Log Detalhado do Matchmaking — {{ evento.nome }}</h3>
+
+<a href="{% url 'core:evento_detail' evento.id %}" class="btn btn-secondary mt-3">Voltar</a>
+{% for rodada, linhas in logs.items %}
+    <h4 class="mt-4">Rodada {{ rodada }}</h4>
+    <pre style="background:#f8f9fa; padding:15px; border-radius:6px;">
+{% for linha in linhas %}
+{{ linha }}
+{% endfor %}
+    </pre>
+{% endfor %}
+
+
+
+{% endblock %}

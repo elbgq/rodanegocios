@@ -1,0 +1,16 @@
+{% extends "core/base.html" %}
+{% load static %}
+{% block content %}
+<h2>Gerar Rodadas por Ranking — {{ evento.nome }}</h2>
+
+<form method="post">
+    {% csrf_token %}
+
+    <label class="form-label">Número de Rodadas</label>
+    <input type="number" name="qtd_rodadas" class="form-control" min="1" required>
+
+    <button class="btn btn-success mt-3">Gerar Rodadas</button>
+</form>
+
+<a href="{% url 'core:evento_detail' evento.id %}" class="btn btn-secondary mt-3">Voltar</a>
+{% endblock %}

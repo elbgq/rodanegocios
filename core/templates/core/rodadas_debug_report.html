@@ -1,0 +1,68 @@
+{% extends "core/base.html" %}
+{% load static %}
+{% block content %}
+
+<h3>Debug Report — {{ evento.nome }}</h3>
+<p><strong>Total de rodadas:</strong> {{ rodadas|length }}</p>
+<p><strong>Mínimo por vendedor:</strong> {{ minimo_por_vendedor }}</p>
+
+<table class="table table-bordered mt-4">
+    <thead>
+        <tr>
+            <th>Vendedor</th>
+            <th>Participações</th>
+            <th>Status</th>
+            <th>Compatíveis</th>
+            <th>Bloqueio (Relação)</th>
+            <th>Bloqueio (Repetição)</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for item in relatorio %}
+        <tr>
+            <td>{{ item.vendedor.nome }}</td>
+
+            <td class="text-center">
+                <span class="badge bg-dark">{{ item.participacoes }}</span>
+            </td>
+
+            <td>
+                {% if item.atingiu_minimo %}
+                    <span class="badge bg-success">OK</span>
+                {% else %}
+                    <span class="badge bg-danger">Abaixo do mínimo</span>
+                {% endif %}
+            </td>
+
+            <td>
+                {% for c in item.compatíveis %}
+                    <span class="badge bg-primary">{{ c.nome }}</span><br>
+                {% empty %}
+                    <em>Nenhum</em>
+                {% endfor %}
+            </td>
+
+            <td>
+                {% for c in item.bloqueio_relacao %}
+                    <span class="badge bg-warning text-dark">{{ c.nome }}</span><br>
+                {% empty %}
+                    <em>Nenhum</em>
+                {% endfor %}
+            </td>
+
+            <td>
+                {% for c in item.bloqueio_repeticao %}
+                    <span class="badge bg-secondary">{{ c.nome }}</span><br>
+                {% empty %}
+                    <em>Nenhum</em>
+                {% endfor %}
+            </td>
+
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<a href="{% url 'core:evento_detail' evento.id %}" class="btn btn-secondary mt-3">Voltar</a>
+
+{% endblock %}

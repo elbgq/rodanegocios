@@ -1,0 +1,36 @@
+{% extends "core/base.html" %}
+{% load static %}
+{% block content %}
+
+<h2>Agenda de Reuniões — {{ empresa.nome }}</h2>
+<h4>Evento: {{ evento.nome }}</h4>
+<p><strong>Data:</strong> {{ evento.data }}</p>
+<p><strong>Local:</strong> {{ evento.local }}</p>
+<p><strong>Descrição:</strong> {{ evento.descricao }}</p>
+
+<table class="table table-bordered mt-4">
+    <thead class="table-dark">
+        <tr>
+            <th>Rodada</th>
+            <th>Horário</th>
+            <th>Mesa</th>
+            <th>Comprador</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for encontro in encontros %}
+            <tr>
+                <td>{{ encontro.rodada.nome }}</td>
+                <td>{{ encontro.rodada.inicio_ro|time:"H:i" }}</td>
+                <td>{{ encontro.numero }}</td>
+                <td>{{ encontro.comprador.nome }}</td>
+            </tr>
+        {% empty %}
+            <tr><td colspan="4" class="text-muted">Nenhuma reunião agendada.</td></tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<a href="{% url 'core:agendas_empresas_evento' evento.id %}" class="btn btn-secondary mt-3">Voltar</a>
+
+{% endblock %}

@@ -1,0 +1,45 @@
+{% extends "core/base.html" %}
+{% block content %}
+
+
+<h2>Detalhes — {{ evento.nome }}</h2>
+<h4>Relatório de Empresas Inscritas</h4>
+<p><strong>Data:</strong> {{ evento.data }}</p>
+<p><strong>Local:</strong> {{ evento.local }}</p>
+<a href="{% url 'core:evento_detail' evento.id %}" class="btn btn-secondary">Voltar</a>
+{% if total == 0 %}
+<div class="alert alert-warning">
+    Nenhuma empresa está inscrita neste evento.
+    Inscreva participantes antes de gerar rodadas ou visualizar relatórios.
+</div>
+
+<a href="{% url 'core:evento_participantes' evento.id %}" class="btn btn-primary">
+    Gerenciar Participantes
+</a>
+
+{% else %}
+
+<hr>
+
+<h4>Total de Inscritos: {{ total }}</h4>
+
+<h5 class="mt-4">Compradores ({{ compradores.count }})</h5>
+<ul class="list-group mb-4">
+    {% for emp in compradores %}
+        <li class="list-group-item">{{ emp.nome }}</li>
+    {% empty %}
+        <li class="list-group-item">Nenhum comprador inscrito.</li>
+    {% endfor %}
+</ul>
+
+<h5>Vendedores ({{ vendedores.count }})</h5>
+<ul class="list-group mb-4">
+    {% for emp in vendedores %}
+        <li class="list-group-item">{{ emp.nome }}</li>
+    {% empty %}
+        <li class="list-group-item">Nenhum vendedor inscrito.</li>
+    {% endfor %}
+</ul>
+
+{% endif %}
+{% endblock %}

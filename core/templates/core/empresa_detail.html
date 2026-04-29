@@ -1,0 +1,72 @@
+{% extends 'core/base.html' %}
+{% load static %}
+{% block content %}
+
+<h4>Detalhes da Empresa — {{ empresa.nome }}</h4>
+  
+<p><strong>Segmento:</strong> {{ empresa.segmento }}</p>
+<p><strong>Modalidade:</strong> {{ empresa.modalidade }}</p>
+<!-- ========================= -->
+<!-- RELACIONAMENTOS DA EMPRESA -->
+<!-- ========================= -->
+
+<p><strong>Relacionamentos</strong></p>
+{% if relacionamentos %}
+    <ul class="list-group mb-3">
+        {% for rel in relacionamentos %}
+            <li class="list-group-item">
+                {% if rel.empresa_a == empresa %}
+                    {{ rel.empresa_b.nome }}
+                {% else %}
+                    {{ rel.empresa_a.nome }}
+                {% endif %}
+                — <em>{{ rel.get_tipo_relacao_display }}</em>
+            </li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p class="text-muted">Nenhum relacionamento cadastrado.</p>
+{% endif %}
+
+<a href="{% url 'core:empresa_relacionamentos' empresa.id %}" class="btn btn-outline-primary mb-4">
+    Gerenciar relacionamentos
+</a>
+
+<!-- ========================= -->
+<!-- REPRESENTANTES -->
+<!-- ========================= -->
+<p><strong>Representantes:</strong></p>
+<ul class="list-group">
+    {% for rep in empresa.representantes.all %}
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+            <div>
+                <strong>{{ rep.nome }}</strong><br>
+                <small>{{ rep.email }} — {{ rep.cargo }} - {{ rep.telefone }}</small>
+            </div>
+
+            <div>
+                <a href="{% url 'core:representante_editar' rep.id %}" class="btn btn-warning btn-sm">
+                    Editar
+                </a>
+                <a href="{% url 'core:representante_excluir' rep.id %}" class="btn btn-danger btn-sm">
+                    Excluir
+                </a>
+            </div>
+        </li>
+    {% endfor %}
+</ul>
+
+<p><strong>Site:</strong> <a href="{{ empresa.site }}">{{ empresa.site }}</a></p>
+
+<a href="{% url 'core:empresa_list' %}" class="btn btn-secondary">Voltar</a>
+
+<a href="{% url 'core:representante_novo' empresa.id %}" class="btn btn-outline-success">
+    Adicionar Representante
+</a>
+
+<a href="{% url 'core:representante_importar' empresa.id %}" class="btn btn-outline-secondary">
+    Importar Representantes
+</a>
+
+<a href="{% url 'core:empresa_update' empresa.id %}" class="btn btn-outline-warning">Editar empresa</a>
+{% endblock %}

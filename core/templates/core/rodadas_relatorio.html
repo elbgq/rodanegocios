@@ -1,0 +1,101 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block content %}
+
+<h4 class="mb-1">Agenda de Rodadas — {{ evento.nome }}</h4>
+<p class="text-muted mb-4">
+    <strong>Data:</strong> {{ evento.data }} &nbsp;•&nbsp;
+    <strong>Local:</strong> {{ evento.local }}
+</p>
+<style>
+/* ======== ESTILO PARA TELA ======== */
+.table-responsive {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+/* ======== ESTILO PARA IMPRESSÃO ======== */
+@media print {
+
+    /* Remove scroll e deixa a tabela expandir */
+    .table-responsive {
+        overflow: visible !important;
+    }
+
+    /* Força a tabela a ocupar toda a largura */
+    table {
+        width: 100% !important;
+        table-layout: fixed;
+    }
+
+    /* Evita quebras de página no meio da tabela */
+    table, tr, td, th {
+        page-break-inside: avoid !important;
+    }
+
+    /* Remove botões e elementos que não devem aparecer */
+    a.btn, .btn {
+        display: none !important;
+    }
+
+    /* Remove sombras e bordas que atrapalham na impressão */
+    .shadow-sm {
+        box-shadow: none !important;
+    }
+
+    /* Ajusta fonte para caber mais conteúdo */
+    body {
+        font-size: 11px;
+    }
+}
+</style>
+
+<div class="table-responsive">
+<table class="table table-bordered align-middle text-center shadow-sm">
+    <thead class="table-primary">
+        <tr>
+            <th class="text-start" style="width: 220px;">Comprador</th>
+
+            {% for r in rodadas %}
+                <th class="p-2">
+                    <div class="fw-bold">{{ r.inicio_ro|time:"H:i" }}</div>
+                    <small class="text-muted">{{ r.nome }}</small>
+                </th>
+            {% endfor %}
+        </tr>
+    </thead>
+
+    <tbody>
+        {% for linha in linhas %}
+            <tr>
+                <td class="text-start fw-semibold bg-light">
+                    {{ linha.comprador.nome }}
+                </td>
+
+                {% for cel in linha.celulas %}
+                    <td class="p-1"
+                        {% if cel %}
+                            style="background-color: {{ cel.cor_alpha }};"
+                        {% endif %}
+                    >
+                        {% if cel %}
+                            <div class="fw-bold" style="color: {{ cel.cor_solid }};">
+                                {{ cel.vendedor.nome }}
+                            </div>
+                        {% else %}
+                            <span class="text-muted">—</span>
+                        {% endif %}
+                    </td>
+                {% endfor %}
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+</div>
+
+<a href="{% url 'core:evento_detail' evento.id %}" class="btn btn-secondary mt-3">
+    Voltar
+</a>
+
+{% endblock %}

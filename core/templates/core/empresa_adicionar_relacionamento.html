@@ -1,0 +1,14 @@
+{% extends "core/base.html" %}
+
+{% block content %}
+<h2>Adicionar relacionamento para {{ empresa.nome }}</h2>
+
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+
+    <button type="submit" class="btn btn-success">Salvar</button>
+    <a href="{% url 'core:empresa_relacionamentos' empresa.id %}" class="btn btn-secondary">Cancelar</a>
+</form>
+{% endblock %}
+ 

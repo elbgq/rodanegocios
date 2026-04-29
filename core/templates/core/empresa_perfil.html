@@ -1,0 +1,34 @@
+{% extends 'core/base.html' %}
+
+{% block content %}
+<h4 class="mb-4">Perfil da Empresa — {{ empresa.nome }}</h4>
+
+<div class="card shadow-sm mb-4">
+    <div class="card-body">
+        <h5 class="card-title">Informações da Empresa</h5>
+        <p><strong>Nome:</strong> {{ empresa.nome }}</p>
+        <p><strong>Modalidade:</strong> {{ empresa.modalidade }}</p>
+    </div>
+</div>
+
+{% for categoria, interesses in interesses_por_categoria %}
+<div class="card shadow-sm mb-3">
+    <div class="card-header bg-primary text-white">
+        {{ categoria.nome }}
+    </div>
+    <div class="card-body">
+        <ul class="mb-0">
+            {% for interesse in interesses %}
+                <li>{{ interesse.nome }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
+{% empty %}
+<div class="alert alert-warning">
+    Esta empresa ainda não possui interesses selecionados.
+</div>
+{% endfor %}
+
+<a href="{% url 'core:empresa_list' %}" class="btn btn-secondary mt-3">Voltar</a>
+{% endblock %}

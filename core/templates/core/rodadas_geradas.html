@@ -1,0 +1,49 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block content %}
+
+<h2>Rodadas Geradas para {{ evento.nome }}</h2>
+<h5>Data: {{ evento.data }}</h5>
+
+<div class="alert alert-success mt-3">
+    <strong>Sucesso!</strong> As rodadas foram geradas automaticamente com base nos critérios definidos.
+</div>
+
+<a href="{% url 'core:rodadas_list' evento.id %}" class="btn btn-primary mb-3">
+    Ver Rodadas
+</a>
+
+<a href="{% url 'core:evento_list' %}" class="btn btn-secondary mb-3">
+    Voltar aos Eventos
+</a>
+
+<hr>
+
+<h4>Resumo das Rodadas</h4>
+
+<table class="table table-striped table-hover align-middle mt-3">
+    <thead class="table-dark">
+        <tr>
+            <th>Nome</th>
+            <th>Duração</th>
+            <th>Início</th>
+            <th>Fim</th>
+            <th>Mesas</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        {% for rodada in rodadas %}
+        <tr>
+            <td>{{ rodada.nome }}</td>
+            <td>{{ rodada.duracao }} min</td>
+            <td>{{ rodada.inicio_ro|time:'H:i' }}</td>
+            <td>{{ rodada.fim_ro|time:'H:i' }}</td>
+            <td>{{ rodada.mesas.count }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% endblock %}

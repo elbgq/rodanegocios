@@ -1,0 +1,15 @@
+{% extends "core/base.html" %}
+{% load static %}
+{% block content %}
+
+<h2>Excluir Evento</h2>
+
+<p>Tem certeza de que deseja excluir o evento <strong>{{ object.nome }}</strong>?</p>
+
+<form method="post">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-danger">Excluir</button>
+    <a href="{% url 'core:evento_list' %}" class="btn btn-secondary">Cancelar</a>
+</form>
+
+{% endblock %}

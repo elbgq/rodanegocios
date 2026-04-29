@@ -1,0 +1,31 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block content %}
+
+<h2>Editar Rodada</h2>
+
+<form method="POST">
+    {% csrf_token %}
+
+    <div class="mb-3">
+        <label class="form-label">Nome:</label>
+        <input type="text" name="nome" class="form-control" value="{{ rodada.nome }}" required>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Duração:</label>
+        <select name="duracao" class="form-select">
+            {% for valor, label in duracoes %}
+                <option value="{{ valor }}" {% if rodada.duracao == valor %}selected{% endif %}>
+                    {{ label }}
+                </option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <button class="btn btn-success">Salvar</button>
+    <a href="{% url 'core:rodadas_list' rodada.evento.id %}" class="btn btn-secondary">Cancelar</a>
+</form>
+
+{% endblock %}

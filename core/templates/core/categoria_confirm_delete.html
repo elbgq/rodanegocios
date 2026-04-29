@@ -1,0 +1,18 @@
+{% extends 'core/base.html' %}
+
+{% block content %}
+<h2 class="mb-4">Excluir Categoria</h2>
+
+<p>Tem certeza que deseja excluir a categoria <strong>{{ categoria.nome }}</strong>?</p>
+
+<p class="text-danger">
+    Atenção: todos os interesses associados a esta categoria também serão removidos.
+</p>
+
+<form method="post">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-danger">Excluir</button>
+    <a href="{% url 'core:categoria_list' %}" class="btn btn-secondary">Cancelar</a>
+</form>
+
+{% endblock %}

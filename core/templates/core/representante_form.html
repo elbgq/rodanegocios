@@ -1,0 +1,28 @@
+{% extends "core/base.html" %}
+{% load static %}
+{% block content %}
+<h2>Adicionar Representante</h2>
+<script src="https://unpkg.com/imask"></script>
+
+<form method="post" class="mt-3">
+    {% csrf_token %}
+    {{ form.as_p }}
+
+    <button class="btn btn-primary">Salvar</button>
+    <a href="{% url 'core:empresa_detail' empresa.id %}" class="btn btn-secondary">Cancelar</a>
+</form>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    var telefoneInput = document.getElementById("id_telefone");
+
+    if (telefoneInput) {
+        IMask(telefoneInput, {
+            mask: [
+                { mask: '(00) 0000-0000' },
+                { mask: '(00) 00000-0000' }
+            ]
+        });
+    }
+});
+</script>
+{% endblock %}
