@@ -3,12 +3,26 @@
 {% block content %}
 <h2>Relacionamentos de {{ empresa.nome }}</h2>
 
-<a href="{% url 'core:empresa_adicionar_relacionamento' empresa.id %}" class="btn btn-primary mb-3">
-    Adicionar relacionamento
-</a>
+{% if empresa.modalidade == "COMPRADOR" %}
+    <a href="{% url 'core:empresa_adicionar_relacionamento' empresa.id %}" 
+       class="btn btn-primary mb-3">
+        Adicionar relacionamento
+    </a>
+{% else %}
+    <div class="alert alert-warning d-flex align-items-center" role="alert">
+        <i class="bi bi-exclamation-triangle-fill me-2"></i>
+        Esta empresa é &nbsp;<strong>VENDEDORA</strong>.
+        Relacionamentos devem ser estabelecidos a partir do &nbsp;<strong>COMPRADOR</strong>&nbsp; correspondente.
+    </div>
+
+    <button class="btn btn-secondary mb-3" disabled>
+        Adicionar relacionamento (bloqueado)
+    </button>
+{% endif %}
+
 
 <table class="table table-striped">
-    <thead>
+    <thead> 
         <tr>
             <th>Empresa</th>
             <th>Tipo</th>

@@ -1720,7 +1720,7 @@ def adicionar_relacionamento(request, empresa_id):
 
     # 🔥 Bloqueia vendedores de criar relacionamentos
     if empresa.modalidade != "COMPRADOR":
-        messages.error(request, "Somente empresas COMPRADORAS podem criar relacionamentos.")
+        messages.warning(request, "Esta empresa é VENDEDORA. Relacionamentos devem ser estabelecidos a partir do  COMPRADOR correspondente.")
         return redirect("core:empresa_relacionamentos", empresa.id)
     
     if request.method == "POST":
