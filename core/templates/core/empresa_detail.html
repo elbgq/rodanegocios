@@ -1,5 +1,7 @@
 {% extends 'core/base.html' %}
 {% load static %}
+{% load relacionamentos %}
+
 {% block content %}
 
 <h4>Detalhes da Empresa — {{ empresa.nome }}</h4>
@@ -11,6 +13,7 @@
 <!-- ========================= -->
 
 <p><strong>Relacionamentos</strong></p>
+
 {% if relacionamentos %}
     <ul class="list-group mb-3">
         {% for rel in relacionamentos %}
@@ -20,7 +23,7 @@
                 {% else %}
                     {{ rel.empresa_a.nome }}
                 {% endif %}
-                — <em>{{ rel.get_tipo_relacao_display }}</em>
+                — <em>{{ rel|tipo_relacao_para:empresa }}</em>
             </li>
         {% endfor %}
     </ul>
@@ -28,9 +31,26 @@
     <p class="text-muted">Nenhum relacionamento cadastrado.</p>
 {% endif %}
 
-<a href="{% url 'core:empresa_relacionamentos' empresa.id %}" class="btn btn-outline-primary mb-4">
-    Gerenciar relacionamentos
-</a> 
+{% if empresa.modalidade == "COMPRADOR" %}
+
+    <!-- COMPRADOR: botão habilitado -->
+    <a href="{% url 'core:empresa_relacionamentos' empresa.id %}" 
+       class="btn btn-outline-primary mb-4">
+        Gerenciar relacionamentos
+    </a>
+
+{% else %}
+
+    <!-- VENDEDOR: mensagem explicativa -->
+    <div class="alert alert-warning d-flex align-items-center mb-4" role="alert">
+        <i class="bi bi-exclamation-triangle-fill me-2"></i>
+        Esta empresa é &nbsp;<strong>VENDEDORA</strong>.
+        Relacionamentos devem ser gerenciados a partir do &nbsp;<strong>COMPRADOR</strong>&nbsp; relacionado.
+    </div>
+
+    <!-- Nenhum botão exibido -->
+{% endif %}
+
 
 <!-- ========================= -->
 <!-- REPRESENTANTES -->

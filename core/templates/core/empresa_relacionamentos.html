@@ -4,21 +4,37 @@
 <h2>Relacionamentos de {{ empresa.nome }}</h2>
 
 {% if empresa.modalidade == "COMPRADOR" %}
+
     <a href="{% url 'core:empresa_adicionar_relacionamento' empresa.id %}" 
        class="btn btn-primary mb-3">
         Adicionar relacionamento
     </a>
+
 {% else %}
+
     <div class="alert alert-warning d-flex align-items-center" role="alert">
         <i class="bi bi-exclamation-triangle-fill me-2"></i>
         Esta empresa é &nbsp;<strong>VENDEDORA</strong>.
-        Relacionamentos devem ser estabelecidos a partir do &nbsp;<strong>COMPRADOR</strong>&nbsp; correspondente.
+        Relacionamentos devem ser estabelecidos a partir do &nbsp;<strong>COMPRADOR</strong>&nbsp; relacionado.
     </div>
 
-    <button class="btn btn-secondary mb-3" disabled>
-        Adicionar relacionamento (bloqueado)
-    </button>
+    {% if relacoes %}
+        <p><strong>Comprador(es) relacionado(s):</strong></p>
+        <ul>
+            {% for rel in relacoes %}
+                <li>
+                    {% if rel.empresa_a.modalidade == "COMPRADOR" %}
+                        {{ rel.empresa_a.nome }}
+                    {% elif rel.empresa_b.modalidade == "COMPRADOR" %}
+                        {{ rel.empresa_b.nome }}
+                    {% endif %}
+                </li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+
 {% endif %}
+
 
 
 <table class="table table-striped">

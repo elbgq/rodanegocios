@@ -1,5 +1,6 @@
 {% extends "core/base.html" %}
 {% load static %}
+{% load relacionamentos %}
 {% block content %}
 <h2 class="text-primary">Relatório de Empresas Relacionadas</h2>
 
@@ -45,7 +46,7 @@
     <ul>
         {% for rel in lista %}
             <li>
-                {{ rel.empresa_b.nome }} — <em>{{ rel.get_tipo_relacao_display }}</em>
+                {{ rel.empresa_b.nome }} — <em>{{ rel|tipo_relacao_para:empresa }}</em>
             </li>
         {% endfor %}
     </ul>

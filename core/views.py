@@ -1717,7 +1717,7 @@ def empresa_relacionamentos(request, empresa_id):
 
 def adicionar_relacionamento(request, empresa_id):
     empresa = get_object_or_404(Empresa, id=empresa_id)
-
+ 
     # 🔥 Bloqueia vendedores de criar relacionamentos
     if empresa.modalidade != "COMPRADOR":
         messages.warning(request, "Esta empresa é VENDEDORA. Relacionamentos devem ser estabelecidos a partir do  COMPRADOR correspondente.")
