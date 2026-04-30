@@ -142,6 +142,16 @@
 
 {% block scripts %}
 <script>
+// Selecionar todos
+function selecionarTodos() {
+    document.querySelectorAll(".chk-empresa").forEach(chk => chk.checked = true);
+}
+
+// Limpar seleção
+function limparTodos() {
+    document.querySelectorAll(".chk-empresa").forEach(chk => chk.checked = false);
+}
+// Script da busca
 document.addEventListener("DOMContentLoaded", function () {
     const campoBusca = document.getElementById("busca");
     const itens = document.querySelectorAll("#lista-empresas li");
