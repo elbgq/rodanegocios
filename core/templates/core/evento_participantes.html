@@ -142,15 +142,57 @@
 
 {% block scripts %}
 <script>
+// Atualizar os cards ao marcar a empresa
+function atualizarEstatisticas() {
+    const checkboxes = document.querySelectorAll(".chk-empresa");
+    const totalEmpresas = checkboxes.length;
+
+    let totalInscritas = 0;
+    let compradores = 0;
+    let vendedores = 0;
+
+    checkboxes.forEach(chk => {
+        if (chk.checked) {
+            totalInscritas++;
+
+            const modalidade = chk.dataset.modalidade;
+            if (modalidade === "COMPRADOR") compradores++;
+            if (modalidade === "VENDEDOR") vendedores++;
+        }
+    });
+
+    // Atualiza os cards
+    document.getElementById("total-inscritas").innerText = totalInscritas;
+    document.getElementById("compradores-inscritos").innerText = compradores;
+    document.getElementById("vendedores-inscritos").innerText = vendedores;
+
+    // Atualiza a barra de progresso
+    const percentual = totalEmpresas > 0 ? Math.round((totalInscritas / totalEmpresas) * 100) : 0;
+    const barra = document.getElementById("barra-progresso");
+
+    barra.style.width = percentual + "%";
+    barra.innerText = percentual + "%";
+}
+
+// Atualiza ao clicar em qualquer checkbox
+document.querySelectorAll(".chk-empresa").forEach(chk => {
+    chk.addEventListener("change", atualizarEstatisticas);
+});
+
 // Selecionar todos
 function selecionarTodos() {
     document.querySelectorAll(".chk-empresa").forEach(chk => chk.checked = true);
+    atualizarEstatisticas();
 }
 
 // Limpar seleção
 function limparTodos() {
     document.querySelectorAll(".chk-empresa").forEach(chk => chk.checked = false);
+    atualizarEstatisticas();
 }
+// Atualiza ao carregar a página
+document.addEventListener("DOMContentLoaded", atualizarEstatisticas);
+
 // Script da busca
 document.addEventListener("DOMContentLoaded", function () {
     const campoBusca = document.getElementById("busca");

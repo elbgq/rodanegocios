@@ -833,12 +833,61 @@ def evento_participantes(request, evento_id):
     evento = get_object_or_404(Evento, id=evento_id)
     empresas = Empresa.objects.all()
 
-    # LIMPA MENSAGENS ANTIGAS
-    storage = get_messages(request)
-    for _ in storage:
-        pass
+    # ============================
+    # PROCESSAMENTO DO FORMULÁRIO
+    # ============================
+    if request.method == "POST":
+        selecionadas = request.POST.getlist("empresas")
 
-    # Empresas já inscritas
+        # -----------------------------------------
+        # ALERTA: empresas com relacionamento prévio
+        # -----------------------------------------
+        relacionamentos_detectados = []
+        for i, empresa_id in enumerate(selecionadas):
+            for outra_id in selecionadas[i+1:]:
+                if empresas_tem_relacao(int(empresa_id), int(outra_id)):
+                    e1 = Empresa.objects.get(id=empresa_id)
+                    e2 = Empresa.objects.get(id=outra_id)
+                    relacionamentos_detectados.append((e1.nome, e2.nome))
+
+        if relacionamentos_detectados:
+            msg = "Algumas empresas selecionadas já possuem relações prévias:<br>"
+            for e1, e2 in relacionamentos_detectados:
+                msg += f"• {e1} ↔ {e2}<br>"
+            messages.warning(request, mark_safe(msg))
+
+        # -----------------------------------------
+        # VALIDAÇÃO: mínimo de 10 interesses
+        # -----------------------------------------
+        for empresa_id in selecionadas:
+            empresa = Empresa.objects.get(id=empresa_id)
+            if empresa.interesses.count() < 10:
+                messages.error(
+                    request,
+                    f"A empresa '{empresa.nome}' possui menos de 10 interesses marcados. "
+                    "Atualize os interesses antes de inscrevê-la."
+                )
+                return redirect("core:evento_participantes", evento.id)
+
+        # -----------------------------------------
+        # SALVA PARTICIPAÇÕES
+        # -----------------------------------------
+        EmpresaEvento.objects.filter(evento=evento).delete()
+
+        for empresa_id in selecionadas:
+            EmpresaEvento.objects.create(
+                empresa_id=empresa_id,
+                evento=evento,
+                participa=True
+            )
+
+        messages.success(request, "Participantes atualizados com sucesso.")
+        return redirect("core:evento_participantes", evento.id)
+    
+    # ============================
+    # CÁLCULO DAS ESTATÍSTICAS
+    # (executado somente após GET)
+    # ============================
     inscritas = EmpresaEvento.objects.filter(
         evento=evento,
         participa=True
@@ -860,58 +909,8 @@ def evento_participantes(request, evento_id):
     percentual = round((total_inscritas / total_empresas) * 100) if total_empresas > 0 else 0
 
     # ============================
-    # PROCESSAMENTO DO FORMULÁRIO
+    # CONTEXTO
     # ============================
-    if request.method == "POST":
-        selecionadas = request.POST.getlist("empresas")
-
-        # -----------------------------------------
-        # VERIFICA RELACIONAMENTOS ENTRE SELECIONADAS - ALERTA, MAS NÃO BLOQUEIA
-        # -----------------------------------------
-        relacionamentos_detectados = []
-
-        for i, empresa_id in enumerate(selecionadas):
-            for outra_id in selecionadas[i+1:]:
-                if empresas_tem_relacao(int(empresa_id), int(outra_id)):
-                    e1 = Empresa.objects.get(id=empresa_id)
-                    e2 = Empresa.objects.get(id=outra_id)
-                    relacionamentos_detectados.append((e1.nome, e2.nome))
-
-        # Se encontrou relacionamentos, apenas alerta
-        if relacionamentos_detectados:
-            msg = "Algumas empresas selecionadas já possuem relações prévias:<br>"
-            for e1, e2 in relacionamentos_detectados:
-                msg += f"• {e1} ↔ {e2}<br>"
-
-            messages.warning(request, mark_safe(msg))
-            
-        # Validação: mínimo de 10 interesses
-        for empresa_id in selecionadas:
-            empresa = Empresa.objects.get(id=empresa_id)
-            
-            if empresa.interesses.count() < 10:
-                messages.error(
-                    request,
-                    f"A empresa '{empresa.nome}' possui menos de 10 interesses marcados. "
-                    "Atualize os interesses antes de inscrevê-la."
-                )
-                return redirect("core:evento_participantes", evento.id)
-
-        # Limpa participações anteriores
-        EmpresaEvento.objects.filter(evento=evento).delete()
-
-        # Cria novas participações
-        for empresa_id in selecionadas:
-            EmpresaEvento.objects.create(
-                empresa_id=empresa_id,
-                evento=evento,
-                participa=True
-            )
-
-        messages.success(request, "Participantes atualizados com sucesso.")
-        return redirect("core:evento_participantes", evento.id)
-
-
     context = {
         "evento": evento,
         "empresas": empresas,
@@ -924,6 +923,7 @@ def evento_participantes(request, evento_id):
     }
 
     return render(request, "core/evento_participantes.html", context)
+    
 # -----------------------------------------------
 # RELATÓRIO DE PARTICIPANTES INSCRITOS NO EVENTO
 # -----------------------------------------------
