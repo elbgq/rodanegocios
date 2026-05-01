@@ -21,6 +21,7 @@ urlpatterns = [
     path("<int:empresa_id>/relacionamentos/adicionar/", views.adicionar_relacionamento, name="empresa_adicionar_relacionamento"),
     path("<int:empresa_id>/relacionamentos/remover/<int:rel_id>/", views.remover_relacionamento, name="remover_relacionamento"),
     path("relatorios/empresas-relacionadas/", views.relatorio_empresas_relacionadas, name="relatorio_empresas_relacionadas"),
+    path('empresa/<int:empresa_id>/relacionamento/<int:rel_id>/editar/',views.editar_relacionamento, name='empresa_editar_relacionamento'),
     
     # CATEGORIAS
     path("categorias/", views.categoria_list, name="categoria_list"),

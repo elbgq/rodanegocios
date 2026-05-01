@@ -57,8 +57,15 @@
                 </td>
                 <td>{{ rel.get_tipo_relacao_display }}</td>
                 <td>
+                    {% if empresa.modalidade == "COMPRADOR" %}
+                        <a href="{% url 'core:empresa_editar_relacionamento' empresa.id rel.id %}"
+                        class="btn btn-warning btn-sm me-1">
+                            Editar
+                        </a>
+                    {% endif %}
+
                     <a href="{% url 'core:remover_relacionamento' empresa.id rel.id %}"
-                       class="btn btn-danger btn-sm">
+                    class="btn btn-danger btn-sm">
                         Remover
                     </a>
                 </td>

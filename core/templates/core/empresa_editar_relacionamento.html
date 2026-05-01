@@ -1,0 +1,25 @@
+{% extends "core/base.html" %}
+{% load static %}
+{% block content %}
+<h2>Editar Relacionamento</h2>
+
+<p><strong>Empresa:</strong> {{ empresa.nome }}</p>
+<p><strong>Relacionamento com:</strong>
+    {% if rel.empresa_a == empresa %}
+        {{ rel.empresa_b.nome }}
+    {% else %}
+        {{ rel.empresa_a.nome }}
+    {% endif %}
+</p>
+
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+
+    <button type="submit" class="btn btn-primary">Salvar</button>
+    <a href="{% url 'core:empresa_relacionamentos' empresa.id %}" class="btn btn-secondary">
+        Cancelar
+    </a>
+</form>
+
+{% endblock %}

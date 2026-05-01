@@ -1740,6 +1740,25 @@ def adicionar_relacionamento(request, empresa_id):
         "form": form
     })
 
+def editar_relacionamento(request, empresa_id, rel_id):
+    empresa = get_object_or_404(Empresa, id=empresa_id)
+    rel = get_object_or_404(RelacionamentoEmpresa, id=rel_id)
+
+    if request.method == "POST":
+        form = RelacionamentoForm(request.POST, instance=rel)
+        if form.is_valid():
+            form.save()
+            return redirect('core:empresa_relacionamentos', empresa_id)
+    else:
+        form = RelacionamentoForm(instance=rel)
+
+    return render(request, 'core/empresa_editar_relacionamento.html', {
+        'empresa': empresa,
+        'form': form,
+        'rel': rel
+    })
+
+
 def remover_relacionamento(request, empresa_id, rel_id):
     empresa = get_object_or_404(Empresa, id=empresa_id)
     rel = get_object_or_404(RelacionamentoEmpresa, id=rel_id)
