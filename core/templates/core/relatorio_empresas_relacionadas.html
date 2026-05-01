@@ -28,7 +28,12 @@
                         {{ rel.empresa_b.nome }}
                         <span class="text-muted">({{ rel.empresa_b.modalidade }})</span>
                     </td>
-                    <td>{{ rel.get_tipo_relacao_display }}</td>
+                    <td>{{ rel.get_tipo_relacao_display }}
+                        <a href="{% url 'core:empresa_relacionamentos' rel.empresa_a.id %}"
+                            class="btn btn-sm btn-outline-warning ms-2">
+                            Editar
+                        </a>
+                    </td>
                 </tr>
             {% endfor %}
         </tbody>
