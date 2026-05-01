@@ -1547,12 +1547,18 @@ def agendas_empresas_evento(request, evento_id):
                 vendedor=empresa
             ).count()
         )
+    
+    compradores = empresas.filter(modalidade="COMPRADOR").count()
+    vendedores = empresas.filter(modalidade="VENDEDOR").count()
 
-        
-    return render(request, "core/agendas_empresas_evento.html", {
+    context = {
         "evento": evento,
         "empresas": empresas,
-    })
+        "compradores": compradores,
+        "vendedores": vendedores,
+    }
+
+    return render(request, "core/agendas_empresas_evento.html", context)
 
 # Agendo do Comprador
 def agenda_comprador(request, empresa_id, evento_id):

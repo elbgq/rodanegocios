@@ -23,7 +23,7 @@
 
 <h4>Total de Inscritos: {{ total }}</h4>
 
-<h5 class="mt-4">Compradores ({{ compradores.count }})</h5>
+<h5 class="mt-4 text-success">Compradores ({{ compradores.count }})</h5>
 <ul class="list-group mb-4">
     {% for emp in compradores %}
         <li class="list-group-item">{{ emp.nome }}</li>
@@ -32,7 +32,7 @@
     {% endfor %}
 </ul>
 
-<h5>Vendedores ({{ vendedores.count }})</h5>
+<h5 class="mt-4 text-primary">Vendedores ({{ vendedores.count }})</h5>
 <ul class="list-group mb-4">
     {% for emp in vendedores %}
         <li class="list-group-item">{{ emp.nome }}</li>

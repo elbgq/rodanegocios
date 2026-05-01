@@ -34,13 +34,13 @@
 <div class="d-flex justify-content-start gap-4 mb-3">
 
     <div class="p-2 bg-light border rounded">
-        <strong>Compradores:</strong>
-        <span class="text-primary fw-bold">{{ compradores }}</span>
+        <strong class="text-success">Compradores:</strong>
+        <span class="text-success fw-bold">{{ compradores }}</span>
     </div>
 
     <div class="p-2 bg-light border rounded">
-        <strong>Vendedores:</strong>
-        <span class="text-success fw-bold">{{ vendedores }}</span>
+        <strong class="text-primary">Vendedores:</strong>
+        <span class="text-primary fw-bold">{{ vendedores }}</span>
     </div>
 
 </div>
@@ -83,7 +83,14 @@
         {% for empresa in empresas %}
         <tr>
             <td class="fw-bold">{{ empresa.nome }}</td>
-            <td class="fw-bold">{{ empresa.modalidade|title }}</td>
+            <td class="fw-bold">
+                {% if empresa.modalidade == "COMPRADOR" %}
+                    <span class="text-success">{{ empresa.modalidade|title }}</span>
+                {% else %}
+                    <span class="text-primary">{{ empresa.modalidade|title }}</span>
+                {% endif %}
+            </td>
+
             <td>
                 {% if empresa.representantes.exists %}
                     <div class="dropdown">

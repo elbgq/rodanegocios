@@ -28,9 +28,18 @@
         width: 100% !important;
         table-layout: fixed;
     }
+    /* Evita que o título se separe da tabela */
+    h4, p, table {
+        page-break-inside: avoid;
+    }
 
-    /* Evita quebras de página no meio da tabela */
-    table, tr, td, th {
+    /* Garante que a tabela não comece em nova página sozinha */
+    table {
+        page-break-before: avoid;
+    }
+
+    /* Evita que partes internas da tabela quebrem */
+    thead, tbody, tr, td, th {
         page-break-inside: avoid !important;
     }
 
@@ -48,6 +57,11 @@
     body {
         font-size: 11px;
     }
+
+    /* Remove margens excessivas que podem causar quebra */
+    .table-responsive {
+        overflow: visible !important;
+    }
 }
 </style>
 
@@ -55,12 +69,12 @@
 <table class="table table-bordered align-middle text-center shadow-sm">
     <thead class="table-primary">
         <tr>
-            <th class="text-start" style="width: 220px;">Comprador</th>
+            <th class="text-start text-success" style="width: 220px;">Comprador</th>
 
             {% for r in rodadas %}
                 <th class="p-2">
                     <div class="fw-bold">{{ r.inicio_ro|time:"H:i" }}</div>
-                    <small class="text-muted">{{ r.nome }}</small>
+                    <small class="text-primary">{{ r.nome }}</small>
                 </th>
             {% endfor %}
         </tr>

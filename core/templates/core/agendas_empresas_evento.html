@@ -6,7 +6,17 @@
 <p><strong>Data:</strong> {{ evento.data }}</p>
 
 <p><strong>Local:</strong> {{ evento.local }}</p>
+<div class="d-flex justify-content-start gap-2 mb-3">
+    <div class="p-2 bg-light border rounded">
+        <strong class="text-success">Compradores:</strong>
+        <span class="text-success fw-bold">{{ compradores }}</span>
+    </div>
 
+    <div class="p-2 bg-light border rounded">
+        <strong class="text-primary">Vendedores:</strong>
+        <span class="text-primary fw-bold">{{ vendedores }}</span>
+    </div>
+</div>
 
 <table class="table table-striped mt-4">
     <thead>

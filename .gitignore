@@ -135,4 +135,3 @@ core/templates/core/solicitacoes_lista.html
 core/templates/core/solicitar_acesso.html
 core/templates/registration/
 estrutura_pastas.txt
-dados.json
