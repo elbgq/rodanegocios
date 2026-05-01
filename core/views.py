@@ -33,7 +33,7 @@ from django.contrib.auth import logout
 from .utils import get_senha_rodanegocios, set_senha_rodanegocios, empresas_tem_relacao
 from django.db.models import Q
 from collections import defaultdict
-
+from django.utils.safestring import mark_safe
 
 # -----------------------------
 # Home
@@ -829,6 +829,7 @@ class EventoDeleteView(DeleteView):
 # -------------------------------
 # EMPRESA PARTICIPANTE DE EVENTO
 # -------------------------------
+
 def evento_participantes(request, evento_id):
     evento = get_object_or_404(Evento, id=evento_id)
     empresas = Empresa.objects.all()
