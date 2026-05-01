@@ -59,13 +59,13 @@
                 <td>
                     {% if empresa.modalidade == "COMPRADOR" %}
                         <a href="{% url 'core:empresa_editar_relacionamento' empresa.id rel.id %}"
-                        class="btn btn-warning btn-sm me-1">
+                        class="btn btn-outline-warning btn-sm me-1">
                             Editar
                         </a>
                     {% endif %}
 
                     <a href="{% url 'core:remover_relacionamento' empresa.id rel.id %}"
-                    class="btn btn-danger btn-sm">
+                    class="btn btn-outline-danger btn-sm">
                         Remover
                     </a>
                 </td>
