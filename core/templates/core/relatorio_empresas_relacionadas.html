@@ -4,8 +4,23 @@
 {% block content %}
 <h2 class="text-primary">Relatório de Empresas Relacionadas</h2>
 
-<p class="text-muted">Lista completa de relacionamentos cadastrados entre empresas.</p>
+<p class="text-muted">Lista de relacionamentos cadastrados entre empresas.</p>
 
+<!-- Botão para abrir/fechar o alerta -->
+<button class="btn btn-outline-info btn-sm mb-2" type="button" data-bs-toggle="collapse" data-bs-target="#alertaOrientacoes">
+    Mostrar Orientações
+</button>
+
+<!-- Alerta colapsável -->
+<div class="collapse" id="alertaOrientacoes">
+    <div class="alert alert-info">
+        <strong class="m-0">Orientações:</strong>
+        <p class="m-0">- Ao atribuir um relacionamento observe qual a relação do Vendedor com o Comprador;</p>
+        <p class="m-0">- Qualquer das opções de relacionamento impedem o agendamento entre as empresas relacionadas;</p>
+        <p class="m-0">- As rodadas somente ocorrem entre empresas não relacionadas;</p>
+        <p class="m-0">- Consulte os detalhes do vendedor relacionado, para confirmar o contraditório da relação.</p>
+    </div>
+</div>
 <hr>
 
 {% if relacoes %}
@@ -60,3 +75,21 @@
 <a href="{% url 'core:empresa_list' %}" class="btn btn-secondary mt-4">Voltar</a>
 
 {% endblock %}
+
+{% block scripts %}
+<script>
+// Abrir e fechar orientações
+document.addEventListener("DOMContentLoaded", function () {
+    const btn = document.getElementById("btnOrientacoes");
+    const collapse = document.getElementById("alertaOrientacoes");
+
+    collapse.addEventListener("show.bs.collapse", () => {
+        btn.textContent = "Ocultar Orientações";
+    });
+
+    collapse.addEventListener("hide.bs.collapse", () => {
+        btn.textContent = "Mostrar Orientações";
+    });
+});
+</script>
+{% endblock scripts %}

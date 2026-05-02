@@ -67,14 +67,22 @@
         </div>
     </div>
 </div>
-<!-- Alertas -->
-<div class="alert alert-info"> 
-    <p style="margin: 0;">Recomendações:</p>
-    <p style="margin: 0;">- Marque as empresas a serem inscritas neste evento;</p>
-    <p style="margin: 0;">- Cada empresa deve ter pelo menos 10 interesses marcados. Se precisar, edite-as;</p>
-    <p style="margin: 0;">- Para gerar rodadas, é necessário 1 comprador e 1 vendedor inscritos;</p>
-    <p style="margin: 0;">- A geração das rodadas so pode ocorrer após salvar a inscrição.</p>
+<!-- Botão para abrir/fechar o alerta -->
+<button class="btn btn-outline-info btn-sm mb-2" type="button" data-bs-toggle="collapse" data-bs-target="#alertaRecomendacoes">
+    Mostrar recomendações
+</button>
+
+<!-- Alerta colapsável -->
+<div class="collapse" id="alertaRecomendacoes">
+    <div class="alert alert-info">
+        <strong class="m-0">Recomendações:</strong>
+        <p class="m-0">- Marque as empresas a serem inscritas neste evento;</p>
+        <p class="m-0">- Cada empresa deve ter pelo menos 10 interesses marcados. Se precisar, edite-as;</p>
+        <p class="m-0">- Para gerar rodadas, é necessário, no mínimo, 1 comprador e 1 vendedor inscritos;</p>
+        <p class="m-0">- A geração das rodadas só pode ocorrer após Salvar Participantes.</p>
+    </div>
 </div>
+
 
 <!-- Busca -->
 <!-- <input type="text" id="busca" class="form-control mb-3" placeholder="Buscar empresa..."> -->
@@ -100,6 +108,7 @@
                         class="chk-empresa me-2"
                         data-modalidade="{{ empresa.modalidade|upper }}"
                         {% if empresa.id in inscritas %}checked{% endif %}>
+                        
                         <a href="{% url 'core:empresa_update' empresa.id %}?next={{ request.path }}">
                             {{ empresa.nome }}
                         </a>
@@ -205,6 +214,20 @@ document.addEventListener("DOMContentLoaded", function () {
             const nome = li.innerText.toLowerCase();
             li.hidden = !nome.includes(termo);
         });
+    });
+});
+
+// Abrir e fechar recomendações
+document.addEventListener("DOMContentLoaded", function () {
+    const btn = document.getElementById("btnRecomendacoes");
+    const collapse = document.getElementById("alertaRecomendacoes");
+
+    collapse.addEventListener("show.bs.collapse", () => {
+        btn.textContent = "Ocultar recomendações";
+    });
+
+    collapse.addEventListener("hide.bs.collapse", () => {
+        btn.textContent = "Mostrar recomendações";
     });
 });
 </script>
