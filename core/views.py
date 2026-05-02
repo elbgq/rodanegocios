@@ -80,7 +80,7 @@ SENHA_RODANEGOCIOS = "rodanegocios123"  # você define a senha aqui
 def acesso_rodanegocios(request):
     
     # Sempre limpa o acesso ao abrir a página de senha
-    request.session.pop("acesso_rodanegocios", None)
+    # request.session.pop("acesso_rodanegocios", None)
     
     if request.method == "POST":
         senha_digitada = (request.POST.get("senha") or "").strip()
@@ -102,10 +102,10 @@ def sair(request):
     request.session.pop("acesso_rodanegocios", None)
 
     # Faz logout do Django (caso esteja logado)
-    logout(request)
+    # logout(request)
 
     # Redireciona para a tela de senha
-    return redirect("/acesso/")
+    return redirect("core:acesso_rodanegocios")
 
 # Função para resetar a senha do Rodanegocios
 def reset_senha_rodanegocios(request):

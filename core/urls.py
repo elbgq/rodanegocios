@@ -77,7 +77,7 @@ urlpatterns = [
     path("acesso/", views.acesso_rodanegocios, name="acesso_rodanegocios"),
     path("sair/", views.sair, name="sair"),
     path("reset-senha/", views.reset_senha_rodanegocios, name="reset_senha"),
-    
+     
     # AGENDAS
     path("evento/<int:evento_id>/empresa/<int:empresa_id>/agenda-comprador/",
         views.agenda_comprador, name="agenda_comprador"),

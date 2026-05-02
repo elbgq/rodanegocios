@@ -20,7 +20,25 @@
         <a class="navbar-brand text-primary fw-bold" href="{% url 'core:home' %}">
             Rodadas de Negócios
         </a>
-        
+        <!-- Botão mobile -->
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#menuNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <!-- Área colapsável -->
+        <div class="collapse navbar-collapse" id="menuNav">
+
+            <ul class="navbar-nav ms-auto">
+                {% if request.session.acesso_rodanegocios %}
+                    <li class="nav-item">
+                        <a href="{% url 'core:sair' %}" class="btn btn-outline-danger btn-sm ms-lg-3 mt-2 mt-lg-0">
+                            Sair
+                        </a>
+                    </li>
+                {% endif %}
+            </ul>
+
+        </div>
     </div>
 </nav>
 
