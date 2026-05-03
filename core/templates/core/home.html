@@ -4,7 +4,7 @@
 
 <div class="container-fluid py-5">
     <h1 class="display-5 text-primary fw-bold">Bem-vindo à Rodada de Negócios</h1>
-    <p class="col-md-8 fs-4">
+    <p class="col-md-9 fst-italic text-secondary fs-4">
         Conectamos sua empresa ao mercado através de direcionamento estratégico para gerar presença e resultados.
     </p>
 
@@ -22,7 +22,7 @@
 </div>
  
 <h3 class="text-primary fw-bold">Painel de Agendas </h3>
-<h6 class="text-primary fw-bold">Acesso rápido aos eventos </h6>
+<h6 class="text-secondary fw-bold">Acesso rápido aos eventos </h6>
     <div class="row">
         {% for e in evento %}
             <div class="col-md-6">
@@ -30,7 +30,7 @@
                     <div class="card-body">
                         <h5 class="card-title text-primary fw-bold">{{ e.nome }} </h5>
                         <p class="card-text">
-                            <strong>Data:</strong> {{ e.data|date:"d/m/Y" }} - <strong>Local:</strong> {{ e.local }}
+                            <strong class="text-secondary">Data:</strong> {{ e.data|date:"d/m/Y" }} - <strong class="text-secondary">Local:</strong> {{ e.local }}
                         </p>
                         <a href="{% url 'core:rodadas_relatorio' e.id %}" class="btn btn-outline-primary">
                             Abrir Agenda
