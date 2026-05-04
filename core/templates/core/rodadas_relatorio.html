@@ -69,6 +69,7 @@
 <table class="table table-bordered align-middle text-center shadow-sm">
     <thead class="table-primary">
         <tr>
+            <th class="text-start" style="width: 60px;">Mesa</th>
             <th class="text-start text-success" style="width: 220px;">Comprador</th>
 
             {% for r in rodadas %}
@@ -83,7 +84,8 @@
     <tbody>
         {% for linha in linhas %}
             <tr>
-                <td class="text-start fw-semibold bg-light">
+                <td class="fw-bold">{{ forloop.counter }}</td>
+                <td class="text-start text-success fw-semibold bg-light">
                     {{ linha.comprador.nome }}
                 </td>
 

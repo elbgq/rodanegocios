@@ -143,8 +143,13 @@ def gerar_todas_as_rodadas(
         modalidade="COMPRADOR",
         empresaevento__evento=evento,
         empresaevento__participa=True
-    ))
+    ).order_by("nome")) # Ordem alfabética fixa.
 
+    # mapa fixo: comprador_id → número da mesa
+    mesa_por_comprador = {
+        c.id: i for i, c in enumerate(compradores, start=1)
+    }
+            
     vendedores = list(Empresa.objects.filter(
         modalidade="VENDEDOR",
         empresaevento__evento=evento,
@@ -203,10 +208,10 @@ def gerar_todas_as_rodadas(
             fim_ro=fim
         )
 
-        for i, (comprador, vendedor) in enumerate(pares, start=1):
+        for comprador, vendedor in pares:
             Mesa.objects.create(
                 rodada=rodada,
-                numero=i,
+                numero=mesa_por_comprador[comprador.id], #Mesa fixa
                 comprador=comprador,
                 vendedor=vendedor
             )
@@ -219,7 +224,7 @@ def gerar_todas_as_rodadas(
             horario_atual += timedelta(minutes=pausa_duracao)
 
     return rodadas_criadas, logs
-
+ 
 
 # Resumo: "É um algoritmo guloso + organizador de agenda, muito bem estruturado."
 
