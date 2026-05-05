@@ -3,115 +3,145 @@
 
 {% block content %}
 
-<h4 class="mb-1">Agenda de Rodadas — {{ evento.nome }}</h4>
-<p class="text-muted mb-4">
-    <strong>Data:</strong> {{ evento.data }} &nbsp;•&nbsp;
-    <strong>Local:</strong> {{ evento.local }}
-</p>
-<style>
-/* ======== ESTILO PARA TELA ======== */
-.table-responsive {
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-}
-
-/* ======== ESTILO PARA IMPRESSÃO ======== */
-@media print {
-
-    /* Remove scroll e deixa a tabela expandir */
+<div class="header-wrapper">
+    <div class="header-block">
+        <div class="header-line">
+            <strong>Agenda de Rodadas — {{ evento.nome }}</strong>
+            
+            <span class="text-muted">
+                <strong>Data:</strong> {{ evento.data }} &nbsp;•&nbsp;
+                <strong>Local:</strong> {{ evento.local }}
+            </span>
+        </div>
+    </div>
+    <style>
+    /* ======== ESTILO PARA TELA ======== */
     .table-responsive {
-        overflow: visible !important;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
     }
 
-    /* Força a tabela a ocupar toda a largura */
-    table {
-        width: 100% !important;
-        table-layout: fixed;
+    /* ======== ESTILO PARA IMPRESSÃO ======== */
+    @media print {
+
+        /* Remove navbar */
+        nav,
+        .navbar,
+        .navbar * {
+            display: none !important;
+            visibility: hidden !important;
+            height: 0 !important;
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+
+        /* Cabeçalho indivisível */
+        .header-block,
+        .header-line {
+            page-break-inside: avoid !important;
+            break-inside: avoid !important;
+            page-break-before: avoid !important;
+            page-break-after: avoid !important;
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+
+        .header-line strong,
+        .header-line span {
+            display: block;
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+
+        /* Tabela */
+        .table-responsive {
+            overflow: visible !important;
+        }
+
+        table {
+            width: 100% !important;
+            table-layout: fixed;
+            page-break-before: avoid !important;
+        }
+
+        thead, tbody, tr, td, th {
+            page-break-inside: avoid !important;
+        }
+
+        /* Fonte menor */
+        body {
+            font-size: 10px;
+        }
+
+        /* Margens da página */
+        @page {
+            margin: 0.8cm !important;
+        }
+
+        /* Remove botões */
+        a.btn, .btn {
+            display: none !important;
+        }
+
+        .shadow-sm {
+            box-shadow: none !important;
+        }
     }
-    /* Evita que o título se separe da tabela */
-    h4, p, table {
-        page-break-inside: avoid;
-    }
+    </style>
 
-    /* Garante que a tabela não comece em nova página sozinha */
-    table {
-        page-break-before: avoid;
-    }
 
-    /* Evita que partes internas da tabela quebrem */
-    thead, tbody, tr, td, th {
-        page-break-inside: avoid !important;
-    }
-
-    /* Remove botões e elementos que não devem aparecer */
-    a.btn, .btn {
-        display: none !important;
-    }
-
-    /* Remove sombras e bordas que atrapalham na impressão */
-    .shadow-sm {
-        box-shadow: none !important;
-    }
-
-    /* Ajusta fonte para caber mais conteúdo */
-    body {
-        font-size: 11px;
-    }
-
-    /* Remove margens excessivas que podem causar quebra */
-    .table-responsive {
-        overflow: visible !important;
-    }
-}
-</style>
-
-<div class="table-responsive">
-<table class="table table-bordered align-middle text-center shadow-sm">
-    <thead class="table-primary">
-        <tr>
-            <th class="text-start" style="width: 60px;">Mesa</th>
-            <th class="text-start text-success" style="width: 220px;">Comprador</th>
-
-            {% for r in rodadas %}
-                <th class="p-2">
-                    <div class="fw-bold">{{ r.inicio_ro|time:"H:i" }}</div>
-                    <small class="text-primary">{{ r.nome }}</small>
-                </th>
-            {% endfor %}
-        </tr>
-    </thead>
-
-    <tbody>
-        {% for linha in linhas %}
+    <div class="table-responsive">
+    <table class="table table-bordered align-middle text-center shadow-sm">
+        <thead class="table-primary">
             <tr>
-                <td class="fw-bold">{{ forloop.counter }}</td>
-                <td class="text-start text-success fw-semibold bg-light">
-                    {{ linha.comprador.nome }}
-                </td>
+                <th class="text-start" style="width: 60px;">Mesa</th>
+                <th class="text-start text-success" style="width: 220px;">Comprador</th>
 
-                {% for cel in linha.celulas %}
-                    <td class="p-1"
-                        {% if cel %}
-                            style="background-color: {{ cel.cor_alpha }};"
-                        {% endif %}
-                    >
-                        {% if cel %}
-                            <div class="fw-bold" style="color: {{ cel.cor_solid }};">
-                                {{ cel.vendedor.nome }}
-                            </div>
-                        {% else %}
-                            <span class="text-muted">—</span>
-                        {% endif %}
-                    </td>
+                {% for r in rodadas %}
+                    <th class="p-2">
+                        <div class="fw-bold">{{ r.inicio_ro|time:"H:i" }}</div>
+                        <small class="text-primary">{{ r.nome }}</small>
+                    </th>
                 {% endfor %}
             </tr>
-        {% endfor %}
-    </tbody>
-</table>
-</div>
+        </thead>
 
+        <tbody>
+            {% for linha in linhas %}
+                <tr>
+                    <td class="fw-bold">{{ forloop.counter }}</td>
+                    <td class="text-start text-success fw-semibold bg-light">
+                        {{ linha.comprador.nome }}
+                    </td>
+    
+                    {% for cel in linha.celulas %}
+                        <td class="p-1"
+                            {% if cel %}
+                                style="background-color: {{ cel.cor_alpha }};"
+                            {% endif %}
+                        >
+                            {% if cel %}
+                                <div class="fw-bold" style="color: {{ cel.cor_solid }};">
+                                    {{ cel.vendedor.nome }}
+                                </div>
+                            {% else %}
+                                <span class="text-muted">—</span>
+                            {% endif %}
+                        </td>
+                    {% endfor %}
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    </div>
+</div>
 <a href="{% url 'core:evento_detail' evento.id %}" class="btn btn-secondary mt-3">
     Voltar
 </a>
 
+{% if request.session.tempo_processamento %}
+<p class="text-muted">
+    Tempo de processamento: <strong>{{ request.session.tempo_processamento }}s</strong>
+</p>
+{% endif %}
 {% endblock %}
