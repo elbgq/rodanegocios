@@ -1,0 +1,53 @@
+{% extends "core/base.html" %}
+{% load static %}
+
+{% block content %}
+
+<h2>Relatório de Rodadas por Comprador</h2>
+
+<p>
+    <strong>Eventos selecionados:</strong><br>
+    {% for e in eventos %}
+        • {{ e.nome }} ({{ e.data }})<br>
+    {% endfor %}
+</p>
+
+<hr>
+
+{% if agenda_compradores %}
+    {% for comprador_id, reunioes in agenda_compradores.items %}
+        <h3>{{ forloop.counter }}. {{ reunioes.0.comprador.nome }}</h3>
+
+        <table class="table table-bordered table-striped">
+            <thead>
+                <tr>
+                    <th>Evento</th>
+                    <th>Rodada</th>
+                    <th>Horário</th>
+                    <th>Vendedor</th>
+                    <th>Mesa</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for r in reunioes %}
+                <tr>
+                    <td>{{ r.evento.nome }}</td>
+                    <td>{{ r.rodada.nome }}</td>
+                    <td>{{ r.horario }}</td>
+                    <td>{% if r.vendedor %}{{ r.vendedor.nome }}{% else %}—{% endif %}</td>
+                    <td>{{ r.mesa }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <hr>
+    {% endfor %}
+{% else %}
+    <p class="text-muted">Nenhuma reunião encontrada para os eventos selecionados.</p>
+{% endif %}
+<a href="{% url 'core:eventos_comparar' %}" class="btn btn-secondary mt-3">
+    Voltar
+</a>
+
+{% endblock %}

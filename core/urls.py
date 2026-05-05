@@ -56,6 +56,11 @@ urlpatterns = [
     path("evento/<int:evento_id>/ranking-afinidades/", views.ranking_afinidades, name="ranking_afinidades"),
     path("evento/<int:evento_id>/rodadas-confirmar-ranking/", views.rodadas_confirmar_ranking,
     name="rodadas_confirmar_ranking"),
+    path("eventos/comparar/", views.eventos_comparar, name="eventos_comparar"),
+    path("eventos/relatorio-repeticoes/", views.relatorio_repeticoes, name="relatorio_repeticoes"),
+    path("eventos/relatorio-rodadas-comprador/", views.relatorio_rodadas_comprador,
+    name="relatorio_rodadas_comprador"),
+
       
     # RODADAS
     path("evento/<int:evento_id>/rodadas/gerar/", views.rodadas_gerar, name="rodadas_gerar"),
@@ -64,6 +69,8 @@ urlpatterns = [
     path('rodada/<int:rodada_id>/excluir/', views.rodadas_excluir, name='rodadas_excluir'),
     path("evento/<int:evento_id>/rodadas/debug/", views.rodadas_debug_report, name="rodadas_debug_report"),
     path("evento/<int:evento_id>/rodadas/log/", views.rodadas_log, name="rodadas_log"),
+    path("evento/<int:evento_id>/rodadas/processando/", views.rodadas_processando, 
+    name="rodadas_processando"),
 
     # MESAS
     path('rodada/<int:rodada_id>/mesas/', views.mesas_da_rodada, name='mesas_da_rodada'),

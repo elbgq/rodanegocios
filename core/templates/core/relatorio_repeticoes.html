@@ -1,0 +1,56 @@
+{% extends "core/base.html" %}
+{% load static %}
+
+{% block content %}
+
+<h2>Relatório de Repetições entre Eventos</h2>
+
+<p>
+    <strong>Eventos comparados:</strong><br>
+    {% for evento in eventos %}
+        • {{ evento.nome }} — {{ evento.data }}<br>
+    {% endfor %}
+</p>
+
+<hr>
+
+{% if repetidos %}
+<table class="table table-bordered table-striped">
+    <thead>
+        <tr>
+            <th>Índice</th>
+            <th>Comprador</th>
+            <th>Vendedor</th>
+            <th>Ocorrências</th>
+            <th>Eventos distintos</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for item in repetidos %}
+        <tr>
+            <td>{{ forloop.counter }}</td> <!-- Índice do par repetido -->
+            <td>{{ item.comprador.nome }}</td>
+            <td>{{ item.vendedor.nome }}</td>
+            <td>
+                {% if item.ocorrencias %}
+                    {% for o in item.ocorrencias %}
+                        <strong>{{ o.rodada.evento.nome }}</strong><br>
+                        Rodada: {{ o.rodada.nome }}<br>
+                        Horário: {{ o.rodada.inicio_ro }}<br><br>
+                    {% endfor %}
+                {% else %}
+                    <span class="text-muted">Nenhuma repetição encontrada entre os eventos selecionados.</span>
+                {% endif %}
+            </td>
+            <td>{{ item.quantidade_eventos }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<p class="text-muted">Nenhuma repetição encontrada entre os eventos selecionados.</p>
+{% endif %}
+
+<a href="{% url 'core:eventos_comparar' %}" class="btn btn-secondary mt-3">Voltar</a>
+
+{% endblock %}

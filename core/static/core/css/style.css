@@ -54,3 +54,49 @@ span.badge.bg-vazia {
     color: white !important;
 }
 
+@media print {
+
+    /* Remove qualquer rolagem */
+    .table-responsive {
+        overflow: visible !important;
+        height: auto !important;
+        max-height: none !important;
+    }
+
+    /* O bloco inteiro não pode quebrar */
+    .print-wrapper {
+        page-break-inside: avoid !important;
+        break-inside: avoid !important;
+    }
+
+    /* Evita quebra entre título, parágrafo e tabela */
+    h4, p {
+        page-break-after: avoid !important;
+        break-after: avoid !important;
+    }
+
+    /* Tabela deve quebrar apenas entre linhas, nunca antes dela */
+    table {
+        page-break-inside: auto !important;
+        break-inside: auto !important;
+        width: 100% !important;
+        table-layout: fixed;
+    }
+
+    thead, tr, td, th {
+        page-break-inside: avoid !important;
+        break-inside: avoid !important;
+        white-space: normal;
+    }
+
+    /* Ajuste de fonte */
+    body {
+        font-size: 11px;
+    }
+
+    /* Remove botões */
+    .btn, a.btn {
+        display: none !important;
+    }
+}
+

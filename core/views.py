@@ -3,7 +3,8 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic import (
     ListView, DetailView, CreateView, UpdateView, TemplateView, DeleteView
 )
-from django.urls import reverse_lazy
+from django.urls import reverse_lazy, reverse
+from django.contrib import messages
 from .models import (Empresa, Evento, Rodada, Representante, Mesa, SolicitacaoAcesso,
                      Interesse, Categoria, EmpresaEvento, Endereco, RelacionamentoEmpresa)
 from .forms import (RepresentanteForm, EmpresaForm, CategoriaForm, RelacionamentoForm,
@@ -19,6 +20,7 @@ from django.contrib.messages import get_messages
 import csv
 import re
 import math
+import time
 import random
 from django.contrib import messages
 from django.db import IntegrityError
@@ -34,6 +36,7 @@ from .utils import get_senha_rodanegocios, set_senha_rodanegocios, empresas_tem_
 from django.db.models import Q
 from collections import defaultdict
 from django.utils.safestring import mark_safe
+from django.db.models import Prefetch
 
 # -----------------------------
 # Home
@@ -976,9 +979,27 @@ def ranking_afinidades(request, evento_id):
     # Descobre o top_n
     params = request.session.get("rodadas_params")
     if params and "qtd_rodadas" in params:
-        top_n = min(int(params["qtd_rodadas"]), vendedores.count())
+        top_n = min(int(params["qtd_rodadas"]), len(vendedores))
     else:
-        top_n = vendedores.count()  # fallback: usa todos
+        top_n = len(vendedores)
+        
+    # 🔥 Pré-carrega interesses
+    interesses_compradores = {
+        c.id: set(c.interesses.values_list("id", flat=True))
+        for c in compradores
+    }
+
+    interesses_vendedores = {
+        v.id: set(v.interesses.values_list("id", flat=True))
+        for v in vendedores
+    }
+
+    # 🔥 Pré-calcula afinidades
+    afinidades = {
+        (c.id, v.id): len(interesses_compradores[c.id] & interesses_vendedores[v.id])
+        for c in compradores
+        for v in vendedores
+    }
     
     # Monta o ranking de afinidades: para cada comprador, uma lista de vendedores
     # ordenada por afinidade. O ranking é uma lista de dicionários, onde cada dicionário
@@ -989,10 +1010,10 @@ def ranking_afinidades(request, evento_id):
         lista = []
 
         # Número total de interesses do comprador (para percentual)
-        total_interesses = comprador.interesses.count() or 1
-        
+        total_interesses = len(interesses_compradores[comprador.id]) or 1
+
         for vendedor in vendedores:
-            score = calcular_afinidade(comprador, vendedor)
+            score = afinidades[(comprador.id, vendedor.id)]
             
             # Afinidade percentual
             percentual = round((score / total_interesses) * 100)
@@ -1044,7 +1065,25 @@ def gerar_ranking(evento, top_n):
         empresaevento__evento=evento,
         empresaevento__participa=True
     )
+    
+    # 🔥 Pré-carrega interesses
+    interesses_compradores = {
+        c.id: set(c.interesses.values_list("id", flat=True))
+        for c in compradores
+    }
 
+    interesses_vendedores = {
+        v.id: set(v.interesses.values_list("id", flat=True))
+        for v in vendedores
+    }
+
+    # 🔥 Pré-calcula afinidades
+    afinidades = {
+        (c.id, v.id): len(interesses_compradores[c.id] & interesses_vendedores[v.id])
+        for c in compradores
+        for v in vendedores
+    }
+    
     ranking = {}
 
     for c in compradores:
@@ -1053,17 +1092,18 @@ def gerar_ranking(evento, top_n):
             # 🔥 BLOQUEIO DE RELACIONAMENTO
             if empresas_tem_relacao(c.id, v.id):
                 continue
-            score = calcular_afinidade(c, v)
+            score = afinidades[(c.id, v.id)]
             lista.append((v, score))
 
         lista.sort(key=lambda x: x[1], reverse=True)
 
         # 🔥 pega todos os vendedores
-        ranking[c.id] = [v for v, score in lista]
+        ranking[c.id] = [v for v, score in lista[:top_n]]
 
     return ranking
 
 # ========================================================
+'''
 def rodadas_gerar_ranking(request, evento_id):
     evento = get_object_or_404(Evento, id=evento_id)
 
@@ -1084,6 +1124,7 @@ def rodadas_gerar_ranking(request, evento_id):
         return redirect("core:relatorio_rodadas", evento_id=evento.id)
 
     return render(request, "core/rodadas_gerar_ranking.html", {"evento": evento})
+'''
 
 #==============================
 # Esse relatório serve para você (ou qualquer organizador do evento) entender:
@@ -1264,15 +1305,14 @@ def rodadas_gerar(request, evento_id):
     # SE TUDO OK → GERA RODADAS
     # ============================
     if modo == "ranking":
-        return redirect("core:rodadas_confirmar_ranking", evento_id)
+        return redirect("core:rodadas_processando", evento_id)
 
     return redirect("core:rodadas_confirmar", evento_id)
 
 # ========================================================
 def rodadas_confirmar_ranking(request, evento_id):
     evento = get_object_or_404(Evento, id=evento_id)
-
-    # Recupera parâmetros da sessão
+    
     params = request.session.get("rodadas_params")
     if not params:
         messages.error(request, "Parâmetros de geração de rodadas não encontrados.")
@@ -1308,12 +1348,16 @@ def rodadas_confirmar_ranking(request, evento_id):
         )
         return redirect("core:evento_participantes", evento_id)
 
-    # Remove rodadas anteriores
+    # Remove rodadas e mesas anteriores
     Rodada.objects.filter(evento=evento).delete()
+    Mesa.objects.filter(rodada__evento=evento).delete()
 
+
+    #==========================================
     # ============================
     # GERA AS MESAS POR RANKING
     # ============================
+    inicio = time.time()
     try:
         rodadas, logs = gerar_todas_as_rodadas(
             evento=evento,
@@ -1326,21 +1370,29 @@ def rodadas_confirmar_ranking(request, evento_id):
             qtd_rodadas=qtd_rodadas,
         )
         
-        # Salva logs na sessão
-        request.session["rodadas_logs"] = logs
-        
     except Exception as e:
         messages.error(request, f"Erro ao gerar rodadas por ranking: {e}")
         return redirect("core:rodadas_gerar", evento_id)
-
-    messages.success(request, "Rodadas geradas com sucesso usando ranking de afinidades!")
+    
+    fim = time.time()
+    tempo_processamento = round(fim - inicio, 2)
+    
+    # Salva logs e tempo na sessão
+    request.session["rodadas_logs"] = logs
+    request.session["tempo_processamento"] = tempo_processamento
+    messages.success(request, "Rodadas geradas com sucesso!")
 
     return redirect("core:rodadas_relatorio", evento_id)
+# ========================================================
+def rodadas_processando(request, evento_id):
+    url_gerar = reverse("core:rodadas_confirmar_ranking", args=[evento_id])
+    return render(request, "core/rodadas_processando.html", {"url_gerar": url_gerar})
 
 # ========================================================
 def rodadas_confirmar(request, evento_id):
     evento = get_object_or_404(Evento, id=evento_id)
-
+    
+    # Recupera parâmetros da sessão
     # Recupera parâmetros salvos na sessão
     params = request.session.get("rodadas_params")
     if not params:
@@ -1628,7 +1680,119 @@ def agenda_print(request, evento_id, empresa_id):
         "papel": papel,
     })
 
+# Relatório de repetições entre eventos
 
+def relatorio_repeticoes(request):
+    # IDs dos eventos selecionados (pode vir de GET, POST ou seleção na interface)
+    eventos_ids = request.GET.getlist("eventos")  # ex: ?eventos=1&eventos=2&eventos=3
+    eventos = Evento.objects.filter(id__in=eventos_ids)
+    
+    # Debug: imprimir os eventos selecionados e os eventos realmente carregados
+    # print("=== DEBUG RELATÓRIO REPETIÇÕES ===")
+    # print("Eventos selecionados:", eventos_ids)
+    # print("Eventos carregados:", list(eventos.values_list("id", "nome")))
+
+    # Buscar mesas de todos os eventos selecionados
+    mesas = (
+        Mesa.objects.filter(rodada__evento__in=eventos)
+        .select_related("rodada", "rodada__evento", "comprador", "vendedor")
+        #.order_by("rodada__evento__data", "rodada__inicio_ro", "numero")
+    )
+    
+    # Debug: imprimir detalhes das mesas carregadas
+    # print("MESAS ENCONTRADAS:", mesas.count())
+    
+    # Estrutura: (comprador_id, vendedor_id) → lista de eventos
+    # Cada ocorrência = {evento, rodada, horario}
+    grupos = defaultdict(list)
+    
+    for mesa in mesas:
+        if mesa.comprador_id and mesa.vendedor_id:
+            chave = (mesa.comprador_id, mesa.vendedor_id)
+            grupos[chave].append(mesa)
+            
+            # Debug: imprimir detalhes de cada mesa processada
+            # print("Mesa:", mesa.id, mesa.comprador, mesa.vendedor)
+            # print("Evento da mesa:", mesa.rodada.evento.id, mesa.rodada.evento.nome)
+            # print("Mesa:", mesa.id, "| Evento:", mesa.rodada.evento.id, "| Rodada:", mesa.rodada.id, mesa.rodada.nome)
+            # print("Comprador:", mesa.comprador_id, "| Vendedor:", mesa.vendedor_id)
+
+
+    # Filtrar apenas pares que aparecem em 2 ou mais eventos
+    repetidos = []
+    for (comprador_id, vendedor_id), lista in grupos.items():
+        # Pegar eventos distintos
+        eventos_distintos = {m.rodada.evento_id for m in lista}
+        
+        if len(eventos_distintos) > 1:
+            repetidos.append({
+                "comprador": lista[0].comprador,
+                "vendedor": lista[0].vendedor,
+                "ocorrencias": lista,
+                "quantidade_eventos": len(eventos_distintos),
+            })
+    
+    # Ordenar alfabeticamente pelo nome do comprador
+    repetidos = sorted(
+        repetidos,
+        key=lambda item: item["comprador"].nome.lower()
+    )
+
+    context = {
+        "eventos": eventos,
+        "repetidos": repetidos,
+    }
+    # Debug: imprimir os pares repetidos e os eventos em que ocorrem
+    #for chave, ocorrencias in repeticoes.items():
+    #    print("PAR:", chave, "| Ocorrências:", len(ocorrencias),
+    #        "| Eventos:", {o["evento"].id for o in ocorrencias})
+
+    return render(request, "core/relatorio_repeticoes.html", context)
+
+# View simples para carregar o template de comparação de eventos, onde o organizador
+# pode selecionar quais eventos comparar e ver os pares repetidos.
+def eventos_comparar(request):
+    eventos = Evento.objects.all().order_by("data")
+    return render(request, "core/eventos_comparar.html", {"eventos": eventos})
+
+# Relatório de rodadas por comprador
+def relatorio_rodadas_comprador(request):
+    # IDs dos eventos selecionados
+    eventos_ids = request.GET.getlist("eventos")
+    eventos = Evento.objects.filter(id__in=eventos_ids)
+
+    # Buscar mesas dos eventos selecionados
+    mesas = (
+        Mesa.objects.filter(rodada__evento__in=eventos)
+        .select_related("rodada", "rodada__evento", "comprador", "vendedor")
+        .order_by("comprador__nome", "rodada__evento__data", "rodada__inicio_ro")
+    )
+    
+
+    # Agrupar reuniões por comprador
+    agenda_compradores = defaultdict(list)
+    # print("TOTAL COMPRADORES:", mesas.count())
+    
+    for mesa in mesas:
+        print("Mesa:", mesa.id, "| Comprador:", mesa.comprador, "| Vendedor:", mesa.vendedor)
+        
+        if mesa.comprador:
+            agenda_compradores[mesa.comprador_id].append({
+                "comprador": mesa.comprador,
+                "evento": mesa.rodada.evento,
+                "rodada": mesa.rodada,
+                "horario": mesa.rodada.inicio_ro,
+                "vendedor": mesa.vendedor,
+                "mesa": mesa.numero,
+            })
+    # print("TOTAL COMPRADORES:", len(agenda_compradores))
+    
+    context = {
+        "eventos": eventos,
+        "agenda_compradores": dict(agenda_compradores),
+    }
+
+    return render(request, "core/relatorio_rodadas_comprador.html", context)
 
 # -----------------------------
 # MESAS

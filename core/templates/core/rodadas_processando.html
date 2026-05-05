@@ -1,0 +1,24 @@
+{% extends "core/base.html" %}
+{% load static %}
+{% block content %}
+
+<h3>Gerando rodadas, aguarde...</h3>
+
+<div style="font-size: 20px;">
+    Tempo decorrido: <span id="tempo">0.0</span>s
+</div>
+
+<script>
+let t = 0;
+let timer = setInterval(() => {
+    t += 0.1;
+    document.getElementById("tempo").innerText = t.toFixed(1);
+}, 100);
+
+// Redireciona automaticamente para a view que gera as rodadas
+setTimeout(() => {
+    window.location.href = "{{ url_gerar }}";
+}, 500);
+</script>
+
+{% endblock content %}

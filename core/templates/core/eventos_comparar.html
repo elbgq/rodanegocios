@@ -1,0 +1,83 @@
+{% extends "core/base.html" %}
+{% load static %}
+
+{% block content %}
+<h2>Comparar Eventos</h2>
+
+<form method="get" action="{% url 'core:relatorio_repeticoes' %}">
+    <p>Selecione dois ou mais eventos para comparar:</p>
+
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Selecionar</th>
+                <th>Nome</th>
+                <th>Data</th>
+                <th>Local</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for evento in eventos %}
+            <tr>
+                <td>
+                    <input type="checkbox" name="eventos" value="{{ evento.id }}">
+                </td>
+                <td>{{ evento.nome }}</td>
+                <td>{{ evento.data }}</td>
+                <td>{{ evento.local }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div class="mt-3">
+    <button type="submit" formaction="{% url 'core:relatorio_repeticoes' %}" class="btn btn-primary">
+        Relatório de Repetições
+    </button>
+
+    <button type="submit" formaction="{% url 'core:relatorio_rodadas_comprador' %}" class="btn btn-info">
+        Rodadas por Comprador
+    </button>
+
+    <a href="{% url 'core:evento_list' %}" class="btn btn-secondary">
+        Voltar
+    </a>
+</div>
+
+</form>
+
+<hr>
+
+{% if repetidos %}
+<h3>Repetições encontradas</h3>
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Comprador</th>
+            <th>Vendedor</th>
+            <th>Ocorrências</th>
+            <th>Eventos distintos</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for item in repetidos %}
+        <tr>
+            <td>{{ item.comprador.nome }}</td>
+            <td>{{ item.vendedor.nome }}</td>
+            <td>
+                {% for o in item.ocorrencias %}
+                    <strong>{{ o.evento.nome }}</strong><br>
+                    Rodada: {{ o.rodada.nome }}<br>
+                    Horário: {{ o.horario }}<br><br>
+                {% endfor %}
+            </td>
+            <td>{{ item.quantidade_eventos }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% endif %}
+
+{% endblock %}
