@@ -3,10 +3,10 @@
 
 {% block content %}
 
-<h2>Relatório de Repetições entre Eventos</h2>
+<h2 class="text-primary">Relatório de Repetições entre Eventos</h2>
 
 <p>
-    <strong>Eventos comparados:</strong><br>
+    <strong class="text-info">Eventos comparados:</strong><br>
     {% for evento in eventos %}
         • {{ evento.nome }} — {{ evento.data }}<br>
     {% endfor %}

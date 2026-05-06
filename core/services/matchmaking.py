@@ -27,7 +27,6 @@ def gerar_pares_para_rodada(
     rodada_atual,
     qtd_rodadas,
     afinidades,
-    #log_rodada
 ):
     pares = []
     usados_vendedores = set()
@@ -48,13 +47,16 @@ def gerar_pares_para_rodada(
                 continue
 
             score_base = afinidades[(c.id, e.id)]
-
             # cálculo rápido do score
             participacoes = participacoes_vendedores[e.id]
             rodadas_restantes = qtd_rodadas - rodada_atual + 1
             faltam_para_minimo = max(0, minimo_por_vendedor - participacoes)
 
             score = score_base
+            # PRIORIDADE ABSOLUTA: vendedores sem nenhuma participação
+            if participacoes == 0:
+                score += 999999  # prioridade máxima
+                
             if participacoes >= minimo_por_vendedor:
                 score -= 10000
             else:
@@ -113,12 +115,11 @@ def gerar_todas_as_rodadas(
         )
 
     minimo_por_vendedor = max(1, math.ceil(qtd_rodadas / 2))
-
     participacoes_vendedores = {v.id: 0 for v in vendedores}
-    
     encontros_previos = {c.id: set() for c in compradores}
 
-    # carregar encontros anteriores dos eventos selecionados
+    # Carregar encontros anteriores dos eventos selecionados
+    # Evitar repetições entre eventos selecionados e o evento atual
     if eventos_anteriores is not None and eventos_anteriores.exists():
         encontros_anteriores = (
             Mesa.objects
@@ -160,8 +161,6 @@ def gerar_todas_as_rodadas(
     )
 
     for numero_rodada in range(1, qtd_rodadas + 1):
-        #log_rodada = []
-        #logs[numero_rodada] = log_rodada
 
         vendedores_ordenados = sorted(
             vendedores, key=lambda v: participacoes_vendedores[v.id]
@@ -177,7 +176,6 @@ def gerar_todas_as_rodadas(
             numero_rodada,
             qtd_rodadas,
             afinidades,
-            #log_rodada
         )
 
         inicio = horario_atual.time()

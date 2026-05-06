@@ -1393,13 +1393,14 @@ def rodadas_confirmar_ranking(request, evento_id):
     messages.success(request, "Rodadas geradas com sucesso!")
     return redirect("core:rodadas_relatorio", evento_id)
 
-'''
+
 # ========================================================
 def rodadas_processando(request, evento_id):
-    url_gerar = reverse("core:rodadas_confirmar_ranking", args=[evento_id])
+    url_gerar = reverse("core:rodadas_gerar", args=[evento_id])
     return render(request, "core/rodadas_processando.html", {"url_gerar": url_gerar})
 
 # ========================================================
+'''
 def rodadas_confirmar(request, evento_id):
     evento = get_object_or_404(Evento, id=evento_id)
     
@@ -1874,6 +1875,44 @@ def painel_da_rodada(request, rodada_id):
 
     return render(request, "core/painel_rodada.html", context)
 
+# Reltório de Vendedores participantes
+'''
+def relatorio_vendedores_participacao(request, evento_id):
+    evento = get_object_or_404(Evento, id=evento_id)
+
+    # Vendedores inscritos
+    vendedores = Empresa.objects.filter(
+        modalidade="VENDEDOR",
+        empresaevento__evento=evento,
+        empresaevento__participa=True
+    ).order_by("nome")
+
+    # Mesas do evento, já com rodada e comprador
+    mesas = (
+        Mesa.objects
+        .filter(rodada__evento=evento)
+        .select_related("rodada", "comprador", "vendedor")
+        .order_by("rodada__inicio_ro")
+    )
+
+    # Agrupar mesas por vendedor
+    participacoes = {v.id: [] for v in vendedores}
+
+    for mesa in mesas:
+        participacoes[mesa.vendedor_id].append({
+            "rodada": mesa.rodada,
+            "mesa": mesa.numero,
+            "comprador": mesa.comprador,
+        })
+
+    context = {
+        "evento": evento,
+        "vendedores": vendedores,
+        "participacoes": participacoes,
+    }
+
+    return render(request, "core/relatorio_vendedores_participacao.html", context)
+'''
 # -----------------------------
 # RELATÓRIO DE AFINIDADES
 # -----------------------------
