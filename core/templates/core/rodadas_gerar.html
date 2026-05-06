@@ -7,10 +7,8 @@
         <div class="alert alert-{{ message.tags }}">{{ message }}</div>
     {% endfor %}
 {% endif %}
-<h2>Gerar Rodadas para {{ evento.nome }}</h2>
+<h3 class="text-primary fw-semibold">Gerar Rodadas para {{ evento.nome }}</h3>
 <h6>Data: {{ evento.data }} - Hora Início: {{ evento.inicio_ev }} Hs</h6>
-
-<a href="{% url 'core:evento_list' %}" class="btn btn-secondary mb-3">Voltar</a>
 
 <form method="POST" class="mt-4">
     {% csrf_token %}
@@ -43,7 +41,7 @@
 
     <hr>
 
-    <h5>Intervalos e Pausas</h5>
+    <h5 class="text-primary fw-semibold">Intervalos e Pausas</h5>
 
     <div class="row">
         <div class="col-md-4 mb-3">
@@ -62,10 +60,28 @@
         </div>
     </div>
 
-    <button type="submit" name="modo" value="ranking" class="btn btn-success mt-3">
-        Gerar Rodadas por Ranking
-    </button>
+    <!-- =========================================== -->
+    <h5 class="text-primary fw-semibold">Evitar repetições com eventos anteriores</h5>
 
+    {% if eventos_anteriores %}
+        {% for ev in eventos_anteriores %}
+            <div>
+                <label>
+                    <input type="checkbox" name="evitar_eventos" value="{{ ev.id }}">
+                    {{ ev.nome }} — {{ ev.data }}
+                </label>
+            </div>
+        {% endfor %}
+    {% else %}
+        <p class="text-muted">Nenhum evento anterior encontrado.</p>
+    {% endif %}
+    <!-- =========================================== -->
+    <div class="mb-3 d-flex gap-2">
+        <button type="submit" name="modo" value="ranking" class="btn btn-success mt-3">
+            Gerar Rodadas
+        </button>
+        <a href="{% url 'core:evento_list' %}" class="btn btn-secondary mt-3">Voltar</a>
+    </div>
 </form>
 
 {% endblock %}

@@ -27,12 +27,12 @@ def gerar_pares_para_rodada(
     rodada_atual,
     qtd_rodadas,
     afinidades,
-    log_rodada
+    #log_rodada
 ):
     pares = []
     usados_vendedores = set()
 
-    log_rodada.append(f"Rodada {rodada_atual}")
+    # log_rodada.append(f"Rodada {rodada_atual}")
 
     for c in compradores:
         melhor = None
@@ -72,7 +72,7 @@ def gerar_pares_para_rodada(
             participacoes_vendedores[melhor.id] += 1
             encontros_previos[c.id].add(melhor.id)
 
-            log_rodada.append(f"{c.nome} ↔ {melhor.nome}")
+            #log_rodada.append(f"{c.nome} ↔ {melhor.nome}")
 
         if len(pares) >= qtd_mesas:
             break
@@ -90,6 +90,7 @@ def gerar_todas_as_rodadas(
     pausa_cada,
     pausa_duracao,
     qtd_rodadas,
+    eventos_anteriores=None,
 ):
     compradores = list(Empresa.objects.filter(
         modalidade="COMPRADOR",
@@ -114,8 +115,24 @@ def gerar_todas_as_rodadas(
     minimo_por_vendedor = max(1, math.ceil(qtd_rodadas / 2))
 
     participacoes_vendedores = {v.id: 0 for v in vendedores}
+    
     encontros_previos = {c.id: set() for c in compradores}
 
+    # carregar encontros anteriores dos eventos selecionados
+    if eventos_anteriores is not None and eventos_anteriores.exists():
+        encontros_anteriores = (
+            Mesa.objects
+            .filter(
+                comprador__in=compradores,
+                vendedor__in=vendedores,
+                rodada__evento__in=eventos_anteriores,
+            )
+            .values_list("comprador_id", "vendedor_id")
+            .distinct()
+        )
+        for comprador_id, vendedor_id in encontros_anteriores:
+            encontros_previos[comprador_id].add(vendedor_id)
+        
     # 🔥 Pré-carrega interesses (zero queries depois disso)
     interesses_compradores = {
         c.id: set(c.interesses.values_list("id", flat=True))
@@ -135,7 +152,7 @@ def gerar_todas_as_rodadas(
     }
 
     rodadas_criadas = []
-    logs = {}
+    #logs = {}
 
     horario_atual = datetime.combine(
         evento.data,
@@ -143,8 +160,8 @@ def gerar_todas_as_rodadas(
     )
 
     for numero_rodada in range(1, qtd_rodadas + 1):
-        log_rodada = []
-        logs[numero_rodada] = log_rodada
+        #log_rodada = []
+        #logs[numero_rodada] = log_rodada
 
         vendedores_ordenados = sorted(
             vendedores, key=lambda v: participacoes_vendedores[v.id]
@@ -160,7 +177,7 @@ def gerar_todas_as_rodadas(
             numero_rodada,
             qtd_rodadas,
             afinidades,
-            log_rodada
+            #log_rodada
         )
 
         inicio = horario_atual.time()
@@ -190,4 +207,4 @@ def gerar_todas_as_rodadas(
         if pausa_cada > 0 and numero_rodada % pausa_cada == 0:
             horario_atual += timedelta(minutes=pausa_duracao)
 
-    return rodadas_criadas, logs
+    return rodadas_criadas

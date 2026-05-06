@@ -957,6 +957,7 @@ def relatorio_inscritos(request, evento_id):
 # Apenas calcula afinidades e prepara dados para exibição.
 # Usado exclusivamente para enviar ao template.
 # ====================================
+
 def ranking_afinidades(request, evento_id):
     evento = get_object_or_404(Evento, id=evento_id)
 
@@ -1103,7 +1104,7 @@ def gerar_ranking(evento, top_n):
     return ranking
 
 # ========================================================
-'''
+
 def rodadas_gerar_ranking(request, evento_id):
     evento = get_object_or_404(Evento, id=evento_id)
 
@@ -1124,7 +1125,6 @@ def rodadas_gerar_ranking(request, evento_id):
         return redirect("core:relatorio_rodadas", evento_id=evento.id)
 
     return render(request, "core/rodadas_gerar_ranking.html", {"evento": evento})
-'''
 
 #==============================
 # Esse relatório serve para você (ou qualquer organizador do evento) entender:
@@ -1231,11 +1231,17 @@ def rodadas_list(request, evento_id):
 def rodadas_gerar(request, evento_id):
     evento = get_object_or_404(Evento, id=evento_id)
 
+    # Eventos anteriores (qualquer evento com data menor)
+    eventos_anteriores = Evento.objects.filter(
+        data__lt=evento.data
+    ).order_by("-data")
+    
     # GET → mostra o formulário
     if request.method != "POST":
         return render(request, "core/rodadas_gerar.html", {
             "evento": evento,
-            "duracoes": Rodada.DURACOES
+            "duracoes": Rodada.DURACOES,
+            "eventos_anteriores": eventos_anteriores,
         })
     
     # POST → lê o modo escolhido
@@ -1245,26 +1251,18 @@ def rodadas_gerar(request, evento_id):
             
         # POST → valida participantes e redireciona para confirmação
         qtd_mesas = int(request.POST["qtd_mesas"])
+        qtd_rodadas = int(request.POST["qtd_rodadas"])
         duracao = int(request.POST["duracao"])
         inicio_rodadas = request.POST["inicio_rodadas"]
         intervalo = int(request.POST["intervalo"])
         pausa_cada = int(request.POST["pausa_cada"])
         pausa_duracao = int(request.POST["pausa_duracao"])
-        qtd_rodadas = int(request.POST["qtd_rodadas"])
     except:
         messages.error(request, "Parâmetros inválidos para geração de rodadas.")
         return redirect("core:rodadas_gerar", evento_id)
-
-    # Guarda os dados do formulário na sessão
-    request.session["rodadas_params"] = {
-        "qtd_mesas": qtd_mesas,
-        "duracao": duracao,
-        "inicio_rodadas": inicio_rodadas,
-        "intervalo": intervalo,
-        "pausa_cada": pausa_cada,
-        "pausa_duracao": pausa_duracao,
-        "qtd_rodadas": qtd_rodadas,
-    }
+    
+    evitar_ids = request.POST.getlist("evitar_eventos")
+    eventos_para_evitar = Evento.objects.filter(id__in=evitar_ids)
 
     # ============================
     # VERIFICAÇÃO DE PARTICIPANTES
@@ -1300,16 +1298,33 @@ def rodadas_gerar(request, evento_id):
             "Existem empresas cadastradas que não estão inscritas neste evento. "
             "Confirme se isso está correto antes de gerar as rodadas."
         )
-
-    # ============================
+    
+    # Geração das rodadas
+    if modo == "ranking":
+        rodadas = gerar_todas_as_rodadas(
+            evento=evento,
+            qtd_mesas=qtd_mesas,
+            duracao_minutos=duracao,
+            inicio_rodadas=inicio_rodadas,
+            intervalo_minutos=intervalo,
+            pausa_cada=pausa_cada,
+            pausa_duracao=pausa_duracao,
+            qtd_rodadas=qtd_rodadas,
+            eventos_anteriores=eventos_para_evitar,
+        )
+        messages.success(request, f"{len(rodadas)} rodadas geradas com sucesso.")
+        return redirect("core:rodadas_relatorio", evento_id)
+    
+     # ============================
     # SE TUDO OK → GERA RODADAS
     # ============================
-    if modo == "ranking":
-        return redirect("core:rodadas_processando", evento_id)
 
-    return redirect("core:rodadas_confirmar", evento_id)
+    return redirect("core:rodadas_relatorio", evento_id)
+
 
 # ========================================================
+
+
 def rodadas_confirmar_ranking(request, evento_id):
     evento = get_object_or_404(Evento, id=evento_id)
     
@@ -1359,7 +1374,7 @@ def rodadas_confirmar_ranking(request, evento_id):
     # ============================
     inicio = time.time()
     try:
-        rodadas, logs = gerar_todas_as_rodadas(
+        rodadas = gerar_todas_as_rodadas(
             evento=evento,
             qtd_mesas=qtd_mesas,
             duracao_minutos=duracao,
@@ -1368,21 +1383,17 @@ def rodadas_confirmar_ranking(request, evento_id):
             pausa_cada=pausa_cada,
             pausa_duracao=pausa_duracao,
             qtd_rodadas=qtd_rodadas,
+            eventos_anteriores=None,
         )
         
     except Exception as e:
         messages.error(request, f"Erro ao gerar rodadas por ranking: {e}")
         return redirect("core:rodadas_gerar", evento_id)
-    
-    fim = time.time()
-    tempo_processamento = round(fim - inicio, 2)
-    
-    # Salva logs e tempo na sessão
-    request.session["rodadas_logs"] = logs
-    request.session["tempo_processamento"] = tempo_processamento
+   
     messages.success(request, "Rodadas geradas com sucesso!")
-
     return redirect("core:rodadas_relatorio", evento_id)
+
+'''
 # ========================================================
 def rodadas_processando(request, evento_id):
     url_gerar = reverse("core:rodadas_confirmar_ranking", args=[evento_id])
@@ -1436,7 +1447,7 @@ def rodadas_confirmar(request, evento_id):
     }
 
     return render(request, "core/rodadas_confirmar.html", context)
- 
+'''
 # ========================================================
 def rodadas_do_evento(request, evento_id):
     evento = get_object_or_404(Evento, id=evento_id)
@@ -1774,7 +1785,7 @@ def relatorio_rodadas_comprador(request):
     # print("TOTAL COMPRADORES:", mesas.count())
     
     for mesa in mesas:
-        print("Mesa:", mesa.id, "| Comprador:", mesa.comprador, "| Vendedor:", mesa.vendedor)
+        # print("Mesa:", mesa.id, "| Comprador:", mesa.comprador, "| Vendedor:", mesa.vendedor)
         
         if mesa.comprador:
             agenda_compradores[mesa.comprador_id].append({

@@ -69,8 +69,8 @@ urlpatterns = [
     path('rodada/<int:rodada_id>/excluir/', views.rodadas_excluir, name='rodadas_excluir'),
     path("evento/<int:evento_id>/rodadas/debug/", views.rodadas_debug_report, name="rodadas_debug_report"),
     path("evento/<int:evento_id>/rodadas/log/", views.rodadas_log, name="rodadas_log"),
-    path("evento/<int:evento_id>/rodadas/processando/", views.rodadas_processando, 
-    name="rodadas_processando"),
+    #path("evento/<int:evento_id>/rodadas/processando/", views.rodadas_processando, 
+    #name="rodadas_processando"),
 
     # MESAS
     path('rodada/<int:rodada_id>/mesas/', views.mesas_da_rodada, name='mesas_da_rodada'),
