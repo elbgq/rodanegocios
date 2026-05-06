@@ -942,12 +942,53 @@ def relatorio_inscritos(request, evento_id):
     compradores = inscritos.filter(modalidade="COMPRADOR")
     vendedores = inscritos.filter(modalidade="VENDEDOR")
 
+    # Mesas do evento
+    mesas = (
+        Mesa.objects.filter(rodada__evento_id=evento.id)
+        .select_related("rodada", "comprador", "vendedor")
+        .order_by("rodada__inicio_ro", "numero")
+    )
+    
+    # Participações por empresa (A chave do dicionário é o próprio objeto Empresa)
+    # 🔥 Agora criamos uma lista de objetos prontos para o template
+    lista_vendedores = []
+    lista_compradores = []
+    
+    # Indexar mesas por empresa
+    participacoes = {e.id: [] for e in inscritos}
+
+    for mesa in mesas:
+        participacoes[mesa.vendedor_id].append({
+            "rodada": mesa.rodada,
+            "mesa": mesa.numero,
+            "empresa_oposta": mesa.comprador,
+        })
+        participacoes[mesa.comprador_id].append({
+            "rodada": mesa.rodada,
+            "mesa": mesa.numero,
+            "empresa_oposta": mesa.vendedor,
+        })
+        
+    # Montar listas finais
+    for v in vendedores:
+        lista_vendedores.append({
+            "empresa": v,
+            "participacoes": participacoes[v.id],
+        })
+
+    for c in compradores:
+        lista_compradores.append({
+            "empresa": c,
+            "participacoes": participacoes[c.id],
+        })
+        
     context = {
         "evento": evento,
-        "inscritos": inscritos,
-        "compradores": compradores,
-        "vendedores": vendedores,
         "total": inscritos.count(),
+        "lista_vendedores": lista_vendedores,
+        "lista_compradores": lista_compradores,
+        "total_vendedores": vendedores.count(),
+        "total_compradores": compradores.count(),
     }
 
     return render(request, "core/evento_relatorio_inscritos.html", context)
@@ -1048,6 +1089,7 @@ def ranking_afinidades(request, evento_id):
         "evento": evento,
         "ranking": ranking,
         "top_n": top_n,
+        "total_compradores": compradores.count(),
     }
 
     # Renderiza a página HTML
@@ -1875,44 +1917,7 @@ def painel_da_rodada(request, rodada_id):
 
     return render(request, "core/painel_rodada.html", context)
 
-# Reltório de Vendedores participantes
-'''
-def relatorio_vendedores_participacao(request, evento_id):
-    evento = get_object_or_404(Evento, id=evento_id)
 
-    # Vendedores inscritos
-    vendedores = Empresa.objects.filter(
-        modalidade="VENDEDOR",
-        empresaevento__evento=evento,
-        empresaevento__participa=True
-    ).order_by("nome")
-
-    # Mesas do evento, já com rodada e comprador
-    mesas = (
-        Mesa.objects
-        .filter(rodada__evento=evento)
-        .select_related("rodada", "comprador", "vendedor")
-        .order_by("rodada__inicio_ro")
-    )
-
-    # Agrupar mesas por vendedor
-    participacoes = {v.id: [] for v in vendedores}
-
-    for mesa in mesas:
-        participacoes[mesa.vendedor_id].append({
-            "rodada": mesa.rodada,
-            "mesa": mesa.numero,
-            "comprador": mesa.comprador,
-        })
-
-    context = {
-        "evento": evento,
-        "vendedores": vendedores,
-        "participacoes": participacoes,
-    }
-
-    return render(request, "core/relatorio_vendedores_participacao.html", context)
-'''
 # -----------------------------
 # RELATÓRIO DE AFINIDADES
 # -----------------------------

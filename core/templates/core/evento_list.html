@@ -33,7 +33,6 @@
                 {% if evento.rodadas.exists %}
                     <a href="{% url 'core:rodadas_list' evento.id %}" class="btn btn-sm btn-outline-success">
                         Rodadas</a>
-                    
                 {% else %}
                     <a href="{% url 'core:evento_participantes' evento.id %}" class="btn btn-sm btn-outline-success">
                         Gerenciar Participantes das Rodadas</a>

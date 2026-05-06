@@ -60,8 +60,6 @@ urlpatterns = [
     path("eventos/relatorio-repeticoes/", views.relatorio_repeticoes, name="relatorio_repeticoes"),
     path("eventos/relatorio-rodadas-comprador/", views.relatorio_rodadas_comprador,
     name="relatorio_rodadas_comprador"),
-    #path("evento/<int:evento_id>/relatorio/vendedores-participacao/", views.relatorio_vendedores_participacao,
-    #name="relatorio_vendedores_participacao"),
       
     # RODADAS
     path("evento/<int:evento_id>/rodadas/gerar/", views.rodadas_gerar, name="rodadas_gerar"),

@@ -2,36 +2,75 @@
 {% load static %}
 {% block content %}
 
-<h2>Detalhes — {{ evento.nome }}</h2>
-<h4>Ranking de Afinidades </h4>
+<h4>Detalhes — {{ evento.nome }}</h4>
+<h4 class="text-primary">Ranking de Afinidades</h4>
+
 <a href="{% url 'core:evento_detail' evento.id %}" class="btn btn-secondary mb-3">Voltar</a>
+
+<h3 class="mt-4 text-success">
+    Compradores 
+    <span class="badge bg-success">{{ total_compradores }}</span>
+</h3>
+<div class="accordion" id="accordionRanking">
+
 {% for item in ranking %}
-    <div class="card mb-3">
-        <div class="card-header bg-primary text-white">
-            <strong>{{ item.comprador.nome }}</strong>
+    <div class="accordion-item">
+        <!-- Cabeçalho igual ao relatório de inscritos -->
+        <h2 class="accordion-header" id="headingR{{ forloop.counter }}">
+            <button class="accordion-button collapsed bg-success text-white"
+                    type="button"
+                    data-bs-toggle="collapse"
+                    data-bs-target="#collapseR{{ forloop.counter }}"
+                    aria-expanded="false"
+                    aria-controls="collapseR{{ forloop.counter }}">
+                    {{ item.comprador.nome }}
+
+                <!-- Remove a seta padrão -->
+                <!-- <span class="me-2 fw-bold">{{ item.comprador.nome }}</span> -->
+            
+      </button>
+            </button>
+
+        </h2>
+
+        <div id="collapseR{{ forloop.counter }}"
+             class="accordion-collapse collapse"
+             aria-labelledby="headingR{{ forloop.counter }}"
+             data-bs-parent="#accordionRanking">
+
+            <div class="accordion-body p-0">
+
+                <ul class="list-group list-group-flush">
+                    {% for m in item.melhores %}
+                        <li class="list-group-item d-flex justify-content-between align-items-center"
+                            style="background-color: {{ m.cor_alpha }};">
+
+                            <div>
+                                <span class="fw-bold" style="color: {{ m.cor_solid }};">
+                                    {{ m.vendedor.nome }}
+                                </span>
+
+                                {% if m.conflito %}
+                                    <span class="text-danger fw-bold ms-2">⚠️ Conflito</span>
+                                {% endif %}
+                            </div>
+
+                            <div>
+                                <span class="badge bg-success">{{ m.score }}</span>
+                                <span class="badge bg-info text-dark">{{ m.percentual }}%</span>
+                            </div>
+
+                        </li>
+                    {% endfor %}
+                </ul>
+
+            </div>
         </div>
 
-        <ul class="list-group list-group-flush">
-            {% for m in item.melhores %}
-                <li class="list-group-item d-flex justify-content-between align-items-center"
-                    style="background-color: {{ m.cor_alpha }};">
-                    <div>
-                        <span class="fw-bold" style="color: {{ m.cor_solid }};">
-                            {{ m.vendedor.nome }}
-                        </span>
-
-                        {% if m.conflito %}
-                            <span class="text-danger fw-bold ms-2">⚠️ Conflito</span>
-                        {% endif %}
-                    </div>
-
-                    <div>
-                        <span class="badge bg-success">{{ m.score }}</span>
-                        <span class="badge bg-info text-dark">{{ m.percentual }}%</span>
-                    </div>
-                </li>
-            {% endfor %}
-        </ul>
     </div>
 {% endfor %}
+
+</div>
+
+
 {% endblock %}
