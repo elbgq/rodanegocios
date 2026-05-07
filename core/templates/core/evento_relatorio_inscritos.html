@@ -8,7 +8,7 @@
 <p><strong>Data:</strong> {{ evento.data }}</p>
 <p><strong>Local:</strong> {{ evento.local }}</p>
 
-<a href="{% url 'core:evento_detail' evento.id %}" class="btn btn-secondary">Voltar</a>
+<a href="{% url 'core:evento_detail' evento.id %}" class="btn btn-secondary mb-1">Voltar</a>
 
 {% if total == 0 %}
     <div class="alert alert-warning">
@@ -18,73 +18,73 @@
 
 <hr>
 
-<h4>Total de Inscritos: {{ total }}</h4>
+<h6>Total de Inscritos: {{ total }}</h6>
 
 
-<h3 class="mt-4 text-success">
+<h4 class="mt-2 text-success">
     Compradores 
     <span class="badge bg-success">{{ total_compradores }}</span>
-</h3>
+</h4>
 
 <div class="accordion" id="accordionCompradores">
 
-{% for item in lista_compradores %}
-  <div class="accordion-item">
-    
-    <h2 class="accordion-header" id="headingC{{ forloop.counter }}">
-      <button class="accordion-button collapsed bg-success text-white" type="button"
-              data-bs-toggle="collapse"
-              data-bs-target="#collapseC{{ forloop.counter }}"
-              aria-expanded="false"
-              aria-controls="collapseC{{ forloop.counter }}">
-        {{ item.empresa.nome }}
-      </button>
-    </h2>
+  {% for item in lista_compradores %}
+    <div class="accordion-item">
+      
+      <h2 class="accordion-header" id="headingC{{ forloop.counter }}">
+        <button class="accordion-button collapsed bg-success text-white" type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#collapseC{{ forloop.counter }}"
+                aria-expanded="false"
+                aria-controls="collapseC{{ forloop.counter }}">
+          {{ item.empresa.nome }}
+        </button>
+      </h2>
 
-    <div id="collapseC{{ forloop.counter }}"
-         class="accordion-collapse collapse"
-         aria-labelledby="headingC{{ forloop.counter }}"
-         data-bs-parent="#accordionCompradores">
+      <div id="collapseC{{ forloop.counter }}"
+          class="accordion-collapse collapse"
+          aria-labelledby="headingC{{ forloop.counter }}"
+          data-bs-parent="#accordionCompradores">
 
-      <div class="accordion-body">
+        <div class="accordion-body">
 
-        {% if item.participacoes %}
-          <table class="table table-sm">
-            <thead>
-              <tr>
-                <th>Rodada</th>
-                <th>Horário</th>
-                <th>Mesa</th>
-                <th>Vendedor</th>
-              </tr>
-            </thead>
-            <tbody>
-              {% for p in item.participacoes %}
-              <tr>
-                <td>{{ p.rodada.nome }}</td>
-                <td>{{ p.rodada.inicio_ro }} – {{ p.rodada.fim_ro }}</td>
-                <td>{{ p.mesa }}</td>
-                <td>{{ p.empresa_oposta.nome }}</td>
-              </tr>
-              {% endfor %}
-            </tbody>
-          </table>
-        {% else %}
-          <p class="text-danger">Este comprador não possui agenda.</p>
-        {% endif %}
+          {% if item.participacoes %}
+            <table class="table table-sm">
+              <thead>
+                <tr>
+                  <th>Rodada</th>
+                  <th>Horário</th>
+                  <th>Mesa</th>
+                  <th>Vendedor</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for p in item.participacoes %}
+                <tr>
+                  <td>{{ p.rodada.nome }}</td>
+                  <td>{{ p.rodada.inicio_ro }} – {{ p.rodada.fim_ro }}</td>
+                  <td>{{ p.mesa }}</td>
+                  <td>{{ p.empresa_oposta.nome }}</td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          {% else %}
+            <p class="text-danger">Este comprador não possui agenda.</p>
+          {% endif %}
 
+        </div>
       </div>
-    </div>
 
-  </div>
-{% endfor %}
+    </div>
+  {% endfor %}
 
 </div>
 
-<h3 class="mt-4 text-primary">
+<h4 class="mt-2 text-primary">
     Vendedores 
     <span class="badge bg-primary">{{ total_vendedores }}</span>
-</h3>
+</h4>
 
 
 <div class="accordion" id="accordionVendedores">

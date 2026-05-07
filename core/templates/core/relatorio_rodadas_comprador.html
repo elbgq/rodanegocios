@@ -1,9 +1,8 @@
 {% extends "core/base.html" %}
 {% load static %}
-
 {% block content %}
 
-<h2>Relatório de Rodadas por Comprador</h2>
+<h4>Relatório de Rodadas por Comprador</h4>
 
 <p>
     <strong>Eventos selecionados:</strong><br>
@@ -12,42 +11,78 @@
     {% endfor %}
 </p>
 
+<a href="{% url 'core:eventos_comparar' %}" class="btn btn-secondary mb-3">Voltar</a>
+
 <hr>
 
 {% if agenda_compradores %}
+
+<h3 class="mt-4 text-success">
+    Compradores
+    <span class="badge bg-success">{{ agenda_compradores|length }}</span>
+</h3>
+
+<div class="accordion" id="accordionCompradores">
+
     {% for comprador_id, reunioes in agenda_compradores.items %}
-        <h3>{{ forloop.counter }}. {{ reunioes.0.comprador.nome }}</h3>
+        <div class="accordion-item">
 
-        <table class="table table-bordered table-striped">
-            <thead>
-                <tr>
-                    <th>Evento</th>
-                    <th>Rodada</th>
-                    <th>Horário</th>
-                    <th>Vendedor</th>
-                    <th>Mesa</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for r in reunioes %}
-                <tr>
-                    <td>{{ r.evento.nome }}</td>
-                    <td>{{ r.rodada.nome }}</td>
-                    <td>{{ r.horario }}</td>
-                    <td>{% if r.vendedor %}{{ r.vendedor.nome }}{% else %}—{% endif %}</td>
-                    <td>{{ r.mesa }}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+            <!-- Cabeçalho clicável (igual ao relatório de inscritos) -->
+            <button class="accordion-button collapsed bg-success text-white" type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#collapseC{{ forloop.counter }}"
+                aria-expanded="false"
+                aria-controls="collapseC{{ forloop.counter }}">
+            {{ reunioes.0.comprador.nome }}
+           </button>
+        
+            <!-- Conteúdo expansível -->
+            <div id="collapseC{{ forloop.counter }}"
+                 class="accordion-collapse collapse"
+                 aria-labelledby="headingC{{ forloop.counter }}"
+                 data-bs-parent="#accordionCompradores">
 
-        <hr>
+                <div class="accordion-body p-0">
+
+                    <table class="table table-sm"> <!-- "table table-bordered table-striped mb-0" -->
+                        <thead>
+                            <tr>
+                                <th>Evento</th>
+                                <th>Rodada</th>
+                                <th>Horário</th>
+                                <th>Vendedor</th>
+                                <th>Mesa</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for r in reunioes %}
+                            <tr>
+                                <td>{{ r.evento.nome }}</td>
+                                <td>{{ r.rodada.nome }}</td>
+                                <td>{{ r.horario }}</td>
+                                <td>
+                                    {% if r.vendedor %}
+                                        {{ r.vendedor.nome }}
+                                    {% else %}
+                                        —
+                                    {% endif %}
+                                </td>
+                                <td>{{ r.mesa }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+
+                </div>
+            </div>
+
+        </div>
     {% endfor %}
+
+</div>
+
 {% else %}
     <p class="text-muted">Nenhuma reunião encontrada para os eventos selecionados.</p>
 {% endif %}
-<a href="{% url 'core:eventos_comparar' %}" class="btn btn-secondary mt-3">
-    Voltar
-</a>
 
 {% endblock %}

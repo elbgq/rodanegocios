@@ -3,7 +3,7 @@
 
 {% block content %}
 
-<h2 class="text-primary">Relatório de Repetições entre Eventos</h2>
+<h4 class="text-primary">Relatório de Repetições entre Eventos</h4>
 
 <p>
     <strong class="text-info">Eventos comparados:</strong><br>
@@ -11,12 +11,12 @@
         • {{ evento.nome }} — {{ evento.data }}<br>
     {% endfor %}
 </p>
-
+<a href="{% url 'core:eventos_comparar' %}" class="btn btn-secondary mt-1">Voltar</a>
 <hr>
 
 {% if repetidos %}
 <table class="table table-bordered table-striped">
-    <thead>
+    <thead class="table-dark">
         <tr>
             <th>Índice</th>
             <th>Comprador</th>
@@ -51,6 +51,6 @@
 <p class="text-muted">Nenhuma repetição encontrada entre os eventos selecionados.</p>
 {% endif %}
 
-<a href="{% url 'core:eventos_comparar' %}" class="btn btn-secondary mt-3">Voltar</a>
+
 
 {% endblock %}

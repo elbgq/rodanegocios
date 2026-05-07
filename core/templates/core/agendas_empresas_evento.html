@@ -7,7 +7,9 @@
 
 <p><strong>Local:</strong> {{ evento.local }}</p>
 
-<div class="d-flex justify-content-start gap-2 mb-3">
+<a href="{% url 'core:evento_detail' evento.id %}" class="btn btn-secondary mb-1">Voltar</a>
+<hr>
+<div class="d-flex justify-content-start gap-2 mb-1">
     <div class="p-2 bg-light border rounded">
         <strong class="text-success">Compradores:</strong>
         <span class="text-success fw-bold">{{ compradores }}</span>
@@ -19,7 +21,7 @@
     </div>
 </div>
 
-<table class="table table-striped mt-4">
+<table class="table table-striped mt-2">
     <thead class="table-dark">
         <tr>
             <th>Empresa</th>
@@ -62,6 +64,5 @@
     </tbody>
 </table>
 
-<a href="{% url 'core:evento_detail' evento.id %}" class="btn btn-secondary mt-3">Voltar</a>
 
 {% endblock %}

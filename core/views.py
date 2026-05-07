@@ -1007,7 +1007,7 @@ def ranking_afinidades(request, evento_id):
         modalidade="COMPRADOR",
         empresaevento__evento=evento,
         empresaevento__participa=True
-    )
+    ).order_by("nome")
 
     vendedores = Empresa.objects.filter(
         modalidade="VENDEDOR",

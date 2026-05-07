@@ -5,12 +5,12 @@
 <h4>Detalhes — {{ evento.nome }}</h4>
 <h4 class="text-primary">Ranking de Afinidades</h4>
 
-<a href="{% url 'core:evento_detail' evento.id %}" class="btn btn-secondary mb-3">Voltar</a>
-
-<h3 class="mt-4 text-success">
+<a href="{% url 'core:evento_detail' evento.id %}" class="btn btn-secondary mb-1">Voltar</a>
+<hr>
+<h4 class="mt-2 text-success">
     Compradores 
     <span class="badge bg-success">{{ total_compradores }}</span>
-</h3>
+</h4>
 <div class="accordion" id="accordionRanking">
 
 {% for item in ranking %}

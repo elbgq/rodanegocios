@@ -100,3 +100,23 @@ span.badge.bg-vazia {
     }
 }
 
+/* Configurações para expandir nomes longos */
+.accordion-arrow {
+    position: relative;
+    padding-right: 2rem;
+}
+
+.accordion-arrow::after {
+    content: "▾"; /* seta padrão */
+    position: absolute;
+    right: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 1.1rem;
+    transition: transform 0.2s ease;
+}
+
+/* Quando estiver aberto, gira a seta */
+.accordion-arrow[aria-expanded="true"]::after {
+    transform: translateY(-50%) rotate(180deg);
+}
