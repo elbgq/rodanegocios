@@ -5,12 +5,12 @@
 
 <div class="header-wrapper">
     <div class="header-block">
-        <div class="header-line">
-            <strong>Agenda de Rodadas — {{ evento.nome }}</strong>
+        <div class="header-line mb-3">
+            <strong>Agenda de Rodadas — {{ evento.nome }} </strong>
             
             <span class="text-muted">
-                <strong>Data:</strong> {{ evento.data }} &nbsp;•&nbsp;
-                <strong>Local:</strong> {{ evento.local }}
+                <strong>• Data:</strong> {{ evento.data }}
+                <strong>• Local:</strong> {{ evento.local }}
             </span>
         </div>
     </div>
@@ -48,10 +48,11 @@
 
         .header-line strong,
         .header-line span {
-            display: block;
-            margin: 0 !important;
-            padding: 0 !important;
+            display: inline-block !important;
+            margin-right: 10px !important;
+            vertical-align: middle;
         }
+
 
         /* Tabela */
         .table-responsive {
@@ -138,10 +139,11 @@
 <a href="{% url 'core:evento_detail' evento.id %}" class="btn btn-secondary mt-3">
     Voltar
 </a>
-
+<!--
 {% if request.session.tempo_processamento %}
 <p class="text-muted">
     Tempo de processamento: <strong>{{ request.session.tempo_processamento }}s</strong>
 </p>
 {% endif %}
+-->
 {% endblock %}

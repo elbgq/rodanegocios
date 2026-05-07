@@ -1,7 +1,7 @@
 {% extends 'core/base.html' %}
 {% load static %}
 {% block content %}
-<h2>Detalhes - {{ evento.nome }}</h2>
+<h4>Detalhes - {{ evento.nome }}</h4>
 
 <p><strong>Data:</strong> {{ evento.data }}</p>
 <p><strong>Local:</strong> {{ evento.local }}</p>
@@ -11,13 +11,6 @@
 <a href="{% url 'core:evento_update' evento.id %}" class="btn btn-outline-warning mb-3">
     Editar Evento</a>
 
-<!--    <a href="{% url 'core:rodadas_debug_report' evento.id %}" class="btn btn-outline-warning mb-3">
-    Debug do Matchmaking
-</a>
-<a href="{% url 'core:rodadas_log' evento.id %}" class="btn btn-outline-warning mb-3">
-    Log do Matchmaking
-</a>
--->
 <a href="{% url 'core:evento_relatorio_inscritos' evento.id %}" class="btn btn-outline-info mb-3">
     Relatório de Inscritos</a>
 <a href="{% url 'core:ranking_afinidades' evento.id %}"    class="btn btn-outline-primary mb-3">
