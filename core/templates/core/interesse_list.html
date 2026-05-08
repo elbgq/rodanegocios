@@ -67,12 +67,12 @@
             </div>
         </div>
     {% endfor %}
-
+ 
 </div>
 
 {% include "core/partials/pagination.html" %}
 
-<a href="{% url 'core:home' %}" class="btn btn-secondary mt-4">Voltar</a>
+<a href="{{ next|default:'/' }}" class="btn btn-secondary mt-4">Voltar</a>
 
 <!-- Scripts -->
 <script>

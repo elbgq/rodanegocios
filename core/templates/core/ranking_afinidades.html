@@ -56,8 +56,8 @@
                             </div>
 
                             <div>
-                                 <!-- BOTÃO PARA RELATÓRIO DE AFINIDADES -->
-                                <a href="{% url 'core:relatorio_afinidades' item.comprador.id m.vendedor.id %}"
+                                <!-- BOTÃO PARA RELATÓRIO DE AFINIDADES -->
+                                <a href="{% url 'core:relatorio_afinidades' item.comprador.id m.vendedor.id %}?next={% url 'core:ranking_afinidades' evento.id %}"
                                     class="btn btn-sm btn-outline-primary me-2">
                                     Ver Afinidades
                                 </a>

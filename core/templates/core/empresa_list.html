@@ -8,7 +8,7 @@
 <a href="{% url 'core:empresa_create' %}" class="btn btn-outline-primary mb-3">
     Cadastrar nova empresa
 </a>
-<a href="{% url 'core:interesse_list' %}" class="btn btn-outline-warning mb-3">
+<a href="{% url 'core:interesse_list' %}?next={% url 'core:empresa_list'%}" class="btn btn-outline-warning mb-3">
     Gerenciar interesses
 </a>
 

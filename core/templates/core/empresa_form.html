@@ -185,11 +185,21 @@
 </form>
 
 <br>
-
+ 
 <div class="mb-3">
-    <a href="{% url 'core:interesse_list' %}" class="btn btn-outline-secondary">
-        Gerenciar interesses
-    </a>
+    {% if object %}
+        {# Estamos no modo EDITAR #}
+        <a href="{% url 'core:interesse_list' %}?next={% url 'core:empresa_update' object.pk %}"
+           class="btn btn-outline-secondary">
+            Gerenciar interesses
+        </a>
+    {% else %}
+        {# Estamos no modo CRIAR #}
+        <a href="{% url 'core:interesse_list' %}?next={% url 'core:empresa_create' %}"
+           class="btn btn-outline-secondary">
+            Gerenciar interesses
+        </a>
+    {% endif %}
 
     {% if next %}
         <a href="{{ next }}" class="btn btn-secondary">Voltar</a>

@@ -558,7 +558,7 @@ class InteresseListView(ListView):
     template_name = "core/interesse_list.html"
     context_object_name = "categorias"
     paginate_by = 20  # Exibe 20 por página
-    
+
     def get_queryset(self):
         qs = Categoria.objects.filter(interesse__isnull=False).distinct().order_by("nome")
         return qs
@@ -569,12 +569,13 @@ class InteresseListView(ListView):
         categorias = context["categorias"]
         
         # Carrega interesses de cada categoria
-        interesses_por_categoria = {
+        context["interesses_por_categoria"] = {
             categoria.id: categoria.interesse_set.order_by("nome")
             for categoria in categorias
         }
 
-        context["interesses_por_categoria"] = interesses_por_categoria
+        # 🔥 Aqui é onde você captura o next corretamente
+        context["next"] = self.request.GET.get("next", "/")
         return context
 
 
@@ -1929,7 +1930,7 @@ def mesa_relatorio(request, pk):
     vendedor = mesa.vendedor
 
     interesses_comprador = set(comprador.interesses.all()) if comprador else set()
-    interesses_vendedor = set(vendedor.interesses.all()) if comprador else set()
+    interesses_vendedor = set(vendedor.interesses.all()) if vendedor else set()
 
     afinidades = interesses_comprador.intersection(interesses_vendedor)
     complementares = interesses_comprador.symmetric_difference(interesses_vendedor)
@@ -1941,6 +1942,8 @@ def mesa_relatorio(request, pk):
     else:
         compatibilidade = 0
     # -----------------------------------
+    # 🔥 CAPTURA O NEXT
+    next_url = request.GET.get("next", "/")
     
     context = {
         "mesa": mesa,
@@ -1952,6 +1955,7 @@ def mesa_relatorio(request, pk):
         "interesses_comprador": interesses_comprador,
         "interesses_vendedor": interesses_vendedor,
         "compatibilidade": compatibilidade,
+        "next": next_url,
     }
 
     return render(request, "core/mesa_relatorio.html", context)
@@ -1973,6 +1977,7 @@ def relatorio_afinidades(request, comprador_id, vendedor_id):
     total_unico = interesses_comprador.union(interesses_vendedor)
     compatibilidade = round((len(afinidades) / len(total_unico)) * 100) if total_unico else 0
 
+    next_url = request.GET.get("next", "/")
     context = {
         "mesa": None,  # importante para o template saber que NÃO veio de mesa
         "evento": evento,
@@ -1983,8 +1988,9 @@ def relatorio_afinidades(request, comprador_id, vendedor_id):
         "interesses_comprador": interesses_comprador,
         "interesses_vendedor": interesses_vendedor,
         "compatibilidade": compatibilidade,
+        "next": next_url,
     }
-
+    
     return render(request, "core/mesa_relatorio.html", context)
 
 #================================================

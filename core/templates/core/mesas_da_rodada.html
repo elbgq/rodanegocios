@@ -41,11 +41,11 @@
             <td>{{ mesa.comprador.nome }}</td>
             <td>{{ mesa.vendedor.nome }}</td>
             <td>
-                <a href="{% url 'core:mesa_relatorio' mesa.id %}"
+                <a href="{% url 'core:mesa_relatorio' mesa.id %}?next={% url 'core:mesas_da_rodada' mesa.rodada.id %}"
                    class="btn btn-sm btn-outline-info">
                     Afinidades
                 </a>
-            </td>
+            </td> 
 
         </tr>
         {% empty %}

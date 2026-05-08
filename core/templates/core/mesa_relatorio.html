@@ -1,14 +1,11 @@
 {% extends 'core/base.html' %}
 {% load static %}
 {% block content %}
+
 <h2 class="mb-4">Relatório de Afinidades</h2>
 
 {# BOTÃO VOLTAR — muda conforme origem #}
-{% if mesa %}
-    <a href="{% url 'core:mesas_da_rodada' mesa.rodada.id %}" class="btn btn-secondary mb-4">Voltar</a>
-{% else %}
-    <a href="{% url 'core:ranking_afinidades' evento.id %}" class="btn btn-secondary mb-4">Voltar</a>
-{% endif %}
+<a href="{{ next|default:'/' }}" class="btn btn-secondary mb-4">Voltar</a>
 
 <div class="card mb-4">
     <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">

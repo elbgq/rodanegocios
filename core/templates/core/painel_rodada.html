@@ -88,9 +88,9 @@
                 {{ mesa.status|title }}
             </span>
             </td>
-            
-            <td>
-                <a href="{% url 'core:mesa_relatorio' mesa.id %}"
+             
+            <td> 
+                <a href="{% url 'core:mesa_relatorio' mesa.id %}?next={% url 'core:painel_rodada' rodada.id %}"
                    class="btn btn-sm btn-outline-success">
                     Afinidades
                 </a>
