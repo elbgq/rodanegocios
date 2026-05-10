@@ -3,8 +3,8 @@
 {% block content %}
 
 <h4 >Detalhes — {{ evento.nome }}</h4>
-<h4 class="mt-2 text-primary">Agendas das Empresas </h4>
-
+<h4 class="mt-2 text-primary">Agendas de <strong>{{ total }}</strong> Empresas </h4>
+ 
 <a href="{% url 'core:evento_detail' evento.id %}" class="btn btn-secondary mb-1">Voltar</a>
 <hr>
 <div class="d-flex justify-content-start gap-2 mb-1">

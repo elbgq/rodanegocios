@@ -1657,12 +1657,14 @@ def agendas_empresas_evento(request, evento_id):
     
     compradores = empresas.filter(modalidade="COMPRADOR").count()
     vendedores = empresas.filter(modalidade="VENDEDOR").count()
-
+    total = compradores + vendedores
+    
     context = {
         "evento": evento,
         "empresas": empresas,
         "compradores": compradores,
         "vendedores": vendedores,
+        "total": total,
     }
 
     return render(request, "core/agendas_empresas_evento.html", context)
@@ -1677,7 +1679,7 @@ def agenda_comprador(request, empresa_id, evento_id):
         .filter(rodada__evento=evento, comprador=empresa)
         .select_related("rodada", "vendedor")
         .order_by("rodada__inicio_ro")
-    )
+    ) 
  
     return render(request, "core/agenda_empresas.html", {
         "empresa": empresa,

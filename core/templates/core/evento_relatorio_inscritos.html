@@ -3,7 +3,7 @@
 {% block content %}
 
 <h4 >Detalhes — {{ evento.nome }}</h4>
-<h4 class="mt-2 text-primary">Relatório de Empresas Inscritas</h4>
+<h4 class="mt-2 text-primary">Relatório de <strong>{{ total }}</strong> Empresas Inscritas</h4>
 
 <a href="{% url 'core:evento_detail' evento.id %}" class="btn btn-secondary mb-1">Voltar</a>
 
@@ -13,16 +13,12 @@
     </div>
 {% else %}
 
-<hr>
-
-<h6>Total de Inscritos: {{ total }}</h6>
-
-
-<h4 class="mt-2 text-success">
+<hr style="height: 3px; background-color: #2E8B57; border: none;">
+<h4 class="mt-1 text-success">
     Compradores 
     <span class="badge bg-success">{{ total_compradores }}</span>
 </h4>
-
+<hr style="height: 3px; background-color: #2E8B57; border: none;">
 <div class="accordion" id="accordionCompradores">
 
   {% for item in lista_compradores %}
@@ -77,12 +73,13 @@
   {% endfor %}
 
 </div>
+<hr style="height: 3px; background-color: #0d6efd; border: none;">
 
 <h4 class="mt-2 text-primary">
     Vendedores 
     <span class="badge bg-primary">{{ total_vendedores }}</span>
 </h4>
-
+<hr style="height: 3px; background-color: #0d6efd; border: none;">
 
 <div class="accordion" id="accordionVendedores">
 

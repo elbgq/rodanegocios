@@ -6,11 +6,12 @@
 <h4 class="text-primary">Ranking de Afinidades</h4>
 
 <a href="{% url 'core:evento_detail' evento.id %}" class="btn btn-secondary mb-1">Voltar</a>
-<hr>
+<hr style="height: 3px; background-color: #2E8B57; border: none;">
 <h4 class="mt-2 text-success">
     Compradores 
     <span class="badge bg-success">{{ total_compradores }}</span>
 </h4>
+<hr style="height: 3px; background-color: #2E8B57; border: none;">
 <div class="accordion" id="accordionRanking">
 
 {% for item in ranking %}
