@@ -1553,6 +1553,7 @@ def agenda_rodadas(request, evento_id):
     cores_vendedores = {v.id: cor_para_vendedor(v.id) for v in vendedores}
     
     # Transformar em lista pronta para o template
+    # Cria uma lista de “linhas”, onde cada linha representa um comprador e suas células.
     linhas = []
     for comprador in compradores:
         celulas = []
