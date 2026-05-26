@@ -15,12 +15,11 @@ def cor_para_vendedor(vendedor_id):
 
 
 # Função para ler a senha do Rodanegocios
+from django.conf import settings
+
 def get_senha_rodanegocios():
-    obj, _ = ConfiguracaoSistema.objects.get_or_create(
-        chave="senha_rodanegocios",
-        defaults={"valor": "rodanegocios123"}  # senha inicial
-    )
-    return obj.valor
+    return settings.RODANEGOCIOS_PASSWORD
+
 
 # Função utilitária para gravar a senha do Rodanegocios
 def set_senha_rodanegocios(nova_senha):

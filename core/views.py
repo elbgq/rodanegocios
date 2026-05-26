@@ -79,7 +79,8 @@ def configuracao_sistema_view(request):
     return render(request, "core/configuracao_sistema.html", contexto)
 
 
-SENHA_RODANEGOCIOS = "rodanegocios123"  # você define a senha aqui
+from django.conf import settings
+
 
 def acesso_rodanegocios(request):
     
@@ -88,7 +89,7 @@ def acesso_rodanegocios(request):
     
     if request.method == "POST":
         senha_digitada = (request.POST.get("senha") or "").strip()
-        senha_correta = get_senha_rodanegocios()
+        senha_correta = settings.RODANEGOCIOS_PASSWORD
         
         if senha_digitada == senha_correta:
             request.session["acesso_rodanegocios"] = True
