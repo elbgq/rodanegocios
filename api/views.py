@@ -2,10 +2,12 @@ from django.shortcuts import get_object_or_404, render
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from core.models import Empresa, Evento, Mesa
-from .serializers import MesaSerializer
-
-app_name = 'api'
-
+from .serializers import (
+    EmpresaSerializer,
+    EventoSerializer,
+    RodadaSerializer,
+    MesaSerializer
+)
 
 class AgendaCompradorAPI(APIView):
     def get(self, request, empresa_id, evento_id):
@@ -41,3 +43,31 @@ class AgendaVendedorAPI(APIView):
         )
 
         return Response(MesaSerializer(encontros, many=True).data)
+
+class EmpresaListAPI(APIView):
+    def get(self, request):
+        empresas = Empresa.objects.all().order_by("nome")
+        return Response(EmpresaSerializer(empresas, many=True).data)
+
+
+class EventoListAPI(APIView):
+    def get(self, request):
+        eventos = Evento.objects.all().order_by("data")
+        return Response(EventoSerializer(eventos, many=True).data)
+
+
+class RodadaListAPI(APIView):
+    def get(self, request):
+        rodadas = Rodada.objects.all().select_related("evento").order_by("inicio_ro")
+        return Response(RodadaSerializer(rodadas, many=True).data)
+
+
+class MesaListAPI(APIView):
+    def get(self, request):
+        mesas = (
+            Mesa.objects
+            .select_related("rodada", "comprador", "vendedor")
+            .order_by("rodada__inicio_ro")
+        )
+        return Response(MesaSerializer(mesas, many=True).data)
+    
