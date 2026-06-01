@@ -1,7 +1,7 @@
 from django.shortcuts import get_object_or_404, render
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from core.models import Empresa, Evento, Mesa
+from core.models import Empresa, Evento, Mesa, Rodada
 from .serializers import (
     EmpresaSerializer,
     EventoSerializer,
