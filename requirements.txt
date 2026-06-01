@@ -6,3 +6,5 @@ python-stdnum==2.2
 sqlparse==0.5.5
 tzdata==2025.3
 wheel==0.46.3
+python-dotenv==1.2.2
+djangorestframework==3.17.1

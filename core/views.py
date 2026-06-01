@@ -1626,7 +1626,7 @@ def agendas_empresas_evento(request, evento_id):
 def agenda_comprador(request, empresa_id, evento_id):
     empresa = get_object_or_404(Empresa, id=empresa_id)
     evento = get_object_or_404(Evento, id=evento_id)
-
+ 
     encontros = (
         Mesa.objects
         .filter(rodada__evento=evento, comprador=empresa)
