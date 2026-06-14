@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/6.0/ref/settings/
 """
 import os
 from pathlib import Path
+from datetime import timedelta
 from dotenv import load_dotenv
 
 load_dotenv('/home/eloibgq/.env')
@@ -37,8 +38,17 @@ ALLOWED_HOSTS = [
     '127.0.0.1'
 ]
 
-RODANEGOCIOS_PASSWORD = os.environ.get("RODANEGOCIOS_PASSWORD")
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    )
+}
 
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
+    'AUTH_HEADER_TYPES': ('Bearer',),
+}
 
 # Application definition
 INSTALLED_APPS = [
@@ -56,12 +66,13 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'core.middleware.RodanegociosProtectionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'core.middleware.RodanegociosProtectionMiddleware',
+    
     
 ]
 
@@ -72,7 +83,7 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': ['templates'],
+        'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -142,4 +153,5 @@ STATIC_URL = '/static/'
 # Pastas adicionais onde o Django procura estáticos (ex: raiz do projeto)
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
+EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 

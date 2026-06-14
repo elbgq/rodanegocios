@@ -1,6 +1,6 @@
 import random
 import colorsys
-from .models import ConfiguracaoSistema, RelacionamentoEmpresa
+from .models import RelacionamentoEmpresa, Configuracao
 
 # Função para gerar uma cor única para cada vendedor
 def cor_para_vendedor(vendedor_id):
@@ -13,14 +13,12 @@ def cor_para_vendedor(vendedor_id):
         "alpha": f"rgba({r}, {g}, {b}, 0.18)"  # fundo suave
     }
 
-
 # Função para ler a senha do Rodanegocios
-from django.conf import settings
-
 def get_senha_rodanegocios():
-    return settings.RODANEGOCIOS_PASSWORD
+    cfg = Configuracao.objects.first()
+    return cfg.senha_rodanegocios if cfg else None
 
-
+ 
 # Função utilitária para gravar a senha do Rodanegocios
 def set_senha_rodanegocios(nova_senha):
     ConfiguracaoSistema.objects.update_or_create(

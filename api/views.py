@@ -8,8 +8,12 @@ from .serializers import (
     RodadaSerializer,
     MesaSerializer
 )
+from rest_framework.permissions import IsAuthenticated
+    
 
 class AgendaCompradorAPI(APIView):
+    permission_classes = [IsAuthenticated]
+
     def get(self, request, empresa_id, evento_id):
         empresa = get_object_or_404(Empresa, id=empresa_id)
         evento = get_object_or_404(Evento, id=evento_id)
@@ -28,6 +32,7 @@ class AgendaCompradorAPI(APIView):
 
 
 class AgendaVendedorAPI(APIView):
+    permission_classes = [IsAuthenticated]
     def get(self, request, empresa_id, evento_id):
         empresa = get_object_or_404(Empresa, id=empresa_id)
         evento = get_object_or_404(Evento, id=evento_id)
@@ -45,24 +50,28 @@ class AgendaVendedorAPI(APIView):
         return Response(MesaSerializer(encontros, many=True).data)
 
 class EmpresaListAPI(APIView):
+    permission_classes = [IsAuthenticated]
     def get(self, request):
         empresas = Empresa.objects.all().order_by("nome")
         return Response(EmpresaSerializer(empresas, many=True).data)
 
 
 class EventoListAPI(APIView):
+    permission_classes = [IsAuthenticated]
     def get(self, request):
         eventos = Evento.objects.all().order_by("data")
         return Response(EventoSerializer(eventos, many=True).data)
 
 
 class RodadaListAPI(APIView):
+    permission_classes = [IsAuthenticated]
     def get(self, request):
         rodadas = Rodada.objects.all().select_related("evento").order_by("inicio_ro")
         return Response(RodadaSerializer(rodadas, many=True).data)
 
 
 class MesaListAPI(APIView):
+    permission_classes = [IsAuthenticated]
     def get(self, request):
         mesas = (
             Mesa.objects

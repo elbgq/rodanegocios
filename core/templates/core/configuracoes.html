@@ -1,0 +1,83 @@
+{% extends "core/base.html" %}
+{% load static %}
+
+{% block content %}
+
+<div class="container mt-4" style="max-width: 800px;">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Configurações do Sistema</h2>
+
+        <div>
+            <a href="{% url 'core:logout' %}" class="btn btn-outline-danger btn-sm">
+                Sair
+            </a>
+        </div>
+    </div>
+
+    {% if mensagem %}
+        <div class="alert alert-success">{{ mensagem }}</div>
+    {% endif %}
+
+    {% if erro %}
+        <div class="alert alert-danger">{{ erro }}</div>
+    {% endif %}
+
+    <!-- ========================= -->
+    <!-- 1. ALTERAR MINHA SENHA -->
+    <!-- ========================= -->
+    <div class="card mb-4">
+        <div class="card-header bg-primary text-white">
+            Alterar minha senha
+        </div>
+        <div class="card-body">
+            <a href="{% url 'core:password_change' %}" class="btn btn-primary">
+                Alterar senha
+            </a>
+            <p class="mt-2 text-muted">
+                Você será redirecionado para a página de alteração de senha do sistema.
+            </p>
+        </div>
+    </div>
+
+    <!-- ========================= -->
+    <!-- 2. GERENCIAR USUÁRIOS (somente admin) -->
+    <!-- ========================= -->
+    {% if user.is_superuser %}
+    <div class="card mb-4">
+        <div class="card-header bg-secondary text-white">
+            Gerenciamento de Usuários
+        </div>
+        <div class="card-body">
+
+            <a href="/admin/auth/user/" class="btn btn-secondary">
+                Abrir painel de usuários
+            </a>
+
+            <p class="mt-2 text-muted">
+                Administradores podem criar, editar e remover usuários, além de definir grupos e permissões.
+            </p>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- ========================= -->
+    <!-- 3. CONFIGURAÇÕES DO SISTEMA (opcional) -->
+    <!-- ========================= -->
+    {% if user.is_superuser %}
+    <div class="card mb-4">
+        <div class="card-header bg-dark text-white">
+            Configurações gerais
+        </div>
+        <div class="card-body">
+            <p class="text-muted">
+                Aqui você pode adicionar configurações gerais do sistema, se desejar.
+                (Por enquanto, não há configurações adicionais.)
+            </p>
+        </div>
+    </div>
+    {% endif %}
+
+</div>
+
+{% endblock %}

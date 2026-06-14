@@ -13,19 +13,24 @@
         <form method="POST">
             {% csrf_token %}
             <div class="mb-3">
-                <label class="form-label">Senha de acesso</label>
+                <label class="form-label">Usuário</label>
+                <input type="text" name="username" class="form-control" required>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Senha</label>
                 <input type="password" name="senha" class="form-control" required>
             </div>
 
             <button class="btn btn-primary w-100">Entrar</button>
         </form>
-        <!--
+        
         <div class="text-center mt-3">
-            <a href="/reset-senha/?modo=esqueci" class="btn btn-link text-primary">
+            <a href="{% url 'core:esqueci_senha' %}" class="btn btn-link text-primary">
                 Esqueci a senha
             </a>
         </div>
-        -->
+        
     </div>
 </div>
 {% endblock %}

@@ -30,16 +30,31 @@
         <div class="collapse navbar-collapse" id="menuNav">
 
             <ul class="navbar-nav ms-auto">
-                {% if request.session.acesso_rodanegocios %}
+
+                {% if user.is_authenticated %}
+
+                    <!-- Botão Configurações -->
                     <li class="nav-item">
-                        <a href="{% url 'core:sair' %}" class="btn btn-outline-danger btn-sm ms-lg-3 mt-2 mt-lg-0">
+                        <a href="{% url 'core:configuracoes' %}" 
+                        class="btn btn-secondary btn-sm ms-lg-3 mt-2 mt-lg-0">
+                            ⚙️ Configurações
+                        </a>
+                    </li>
+
+                    <!-- Botão Sair -->
+                    <li class="nav-item">
+                        <a href="{% url 'core:logout' %}" 
+                        class="btn btn-outline-danger btn-sm ms-lg-3 mt-2 mt-lg-0">
                             Sair
                         </a>
                     </li>
+
                 {% endif %}
+
             </ul>
 
         </div>
+
     </div>
 </nav>
 

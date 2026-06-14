@@ -1,5 +1,7 @@
 from django.urls import path
 from . import views
+from django.contrib.auth import views as auth_views
+
 
 app_name = 'core'
 
@@ -83,10 +85,37 @@ urlpatterns = [
     path('rodada/<int:rodada_id>/painel/', views.painel_da_rodada, name='painel_rodada'),
     
     # ACESSO
-    path("configuracoes/", views.configuracao_sistema_view, name="configuracao_sistema"),
-    path("acesso/", views.acesso_rodanegocios, name="acesso_rodanegocios"),
-    path("sair/", views.sair, name="sair"),
-    path("reset-senha/", views.reset_senha_rodanegocios, name="reset_senha"),
+    # LOGIN / LOGOUT
+    path("login/", views.login_view, name="login"),
+    path("logout/", views.logout_view, name="logout"),
+
+    # RECUPERAÇÃO DE SENHA INDIVIDUAL
+    path("esqueci-senha/", views.esqueci_senha, name="esqueci_senha"),
+    path("redefinir-senha/<uuid:token>/", views.redefinir_senha, name="redefinir_senha"),
+    
+    # ALTERAÇÃO DE SENHA (usuário logado)
+    path(
+        "password_change/",
+        auth_views.PasswordChangeView.as_view(
+            template_name="core/password_change.html",
+            success_url="/password_change/done/"
+        ),
+        name="password_change"
+    ),
+
+    path(
+        "password_change/done/",
+        auth_views.PasswordChangeDoneView.as_view(
+            template_name="core/password_change_done.html"
+        ),
+        name="password_change_done"
+    ),
+
+
+
+    # CONFIGURAÇÕES (somente admin)
+    path("configuracoes/", views.configuracoes, name="configuracoes"),
+
      
     # AGENDAS
     path("evento/<int:evento_id>/empresa/<int:empresa_id>/agenda-comprador/",

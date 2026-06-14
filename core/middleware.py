@@ -11,43 +11,24 @@ class RodanegociosProtectionMiddleware:
         caminho = request.path
         
         # ---------------------------
-        # A) Libera a página de acesso (senha)
+        # A) Libera as rotas para acesso
         # ---------------------------
-        if caminho.startswith("/acesso/") or caminho.startswith("/reset-senha/") or caminho.startswith("/configuracoes/"):
+        rotas_livres = [
+            "/login/",
+            "/esqueci-senha/",
+            "/redefinir-senha/",
+            "/password_change/",
+            "/password_change/done/",
+            "/admin/",
+        ]
+        
+        if any(caminho.startswith(r) for r in rotas_livres):
             return self.get_response(request)
 
-        # ---------------------------
-        # B) Libera a página de reset de senha
-        # ---------------------------
-        if caminho.startswith("/reset-senha/"):
-            return self.get_response(request)
+        if not request.user.is_authenticated:
+            return redirect("core:login")
 
-        # ---------------------------
-        # C) Arquivos estáticos e admin
-        # ---------------------------
-        if caminho.startswith("/static/") or caminho.startswith("/admin/"):
-            return self.get_response(request)
+        if not request.user.has_perm("core.pode_acessar_rodanegocios"):
+            return redirect("core:login")
 
-        # ---------------------------
-        # D) Se não tem sessão, redireciona para /acesso/
-        # ---------------------------
-        if not request.session.get("acesso_rodanegocios"):
-            return redirect("/acesso/")
-
-        # ---------------------------
-        # E) Staff tem acesso total
-        # ---------------------------
-        if request.user.is_staff:
-            return self.get_response(request)
-
-        # ---------------------------
-        # F) Proteção específica para /rodanegocios/
-        # ---------------------------
-        if caminho.startswith("/rodanegocios/"):
-            # Aqui você pode colocar regras extras se quiser
-            pass
-
-        # ---------------------------
-        # G) Demais rotas liberadas
-        # ---------------------------
         return self.get_response(request)

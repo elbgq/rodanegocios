@@ -2,41 +2,49 @@ from django.db import models
 from django.core.exceptions import ValidationError
 from django.urls import reverse_lazy
 from django.utils import timezone
-from datetime import time
+from datetime import time, timedelta
 from localflavor.br.models import BRCNPJField
 from django.contrib.auth.models import User
+import uuid
+from django.core.validators import MinLengthValidator, RegexValidator
 
 # ============================
 # PERMISSÕES DE ACESSO
 # ============================
-class ConfiguracaoSistema(models.Model):
-    chave = models.CharField(max_length=100, unique=True)
-    valor = models.CharField(max_length=255)
-
-    def __str__(self):
-        return f"{self.chave}: {self.valor}"
+# Model para armazenar a senha do Rodanegocios
+class Configuracao(models.Model):
+    #senha_rodanegocios = models.CharField(max_length=255)
+    email_recuperacao = models.EmailField(default="eloibgq@gmail.com")
+    identificador_usuario = models.CharField(max_length=50)
     
-    def save(self, *args, **kwargs):
-        self.chave = "senha_rodanegocios"
-        super().save(*args, **kwargs)
-
-
-
-class Meta:
-    permissions = [
-        ("acesso_rodanegocios", "Pode acessar o sistema Rodanegocios"),
-    ]
-
-
-class SolicitacaoAcesso(models.Model):
-    usuario = models.ForeignKey(User, on_delete=models.CASCADE)
-    justificativa = models.TextField()
-    aprovado = models.BooleanField(default=False)
-    data_solicitacao = models.DateTimeField(auto_now_add=True)
-    data_aprovacao = models.DateTimeField(null=True, blank=True)
-
+    # Cria uma permissão de acesso ao Rodanegocios
+    class Meta:
+        permissions = [
+            ("pode_acessar_rodanegocios", "Pode acessar o Rodanegócios"),
+        ]
+        
     def __str__(self):
-        return f"Acesso de {self.usuario.username}"
+        return "Configurações do Sistema"
+
+
+# Gera token para resetar senha do Rodanegocios
+class TokenResetSenha(models.Model):
+    user = models.ForeignKey("auth.User", on_delete=models.CASCADE)
+    token = models.UUIDField(default=uuid.uuid4, unique=True)
+    criado_em = models.DateTimeField(auto_now_add=True)
+    valido_ate = models.DateTimeField()
+
+    def is_valid(self):
+        return timezone.now() <= self.valido_ate
+
+    @staticmethod
+    def gerar_token(user):
+        return TokenResetSenha.objects.create(
+            user=user,
+            valido_ate=timezone.now() + timedelta(minutes=30)
+        )
+
+
 
 # ============================
 # INTERESSE

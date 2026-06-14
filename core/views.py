@@ -5,10 +5,11 @@ from django.views.generic import (
 )
 from django.urls import reverse_lazy, reverse
 from django.contrib import messages
-from .models import (Empresa, Evento, Rodada, Representante, Mesa, SolicitacaoAcesso,
-                     Interesse, Categoria, EmpresaEvento, Endereco, RelacionamentoEmpresa)
+from .models import (Empresa, Evento, Rodada, Representante, Mesa,
+                     Interesse, Categoria, EmpresaEvento, Endereco, RelacionamentoEmpresa,
+                     Configuracao, TokenResetSenha)
 from .forms import (RepresentanteForm, EmpresaForm, CategoriaForm, RelacionamentoForm,
-                    InteresseForm, EnderecoForm, SolicitacaoAcessoForm)
+                    InteresseForm, EnderecoForm)
 from django.views.generic import TemplateView, CreateView, UpdateView, DeleteView
 from django.core.exceptions import ValidationError
 from datetime import datetime, timedelta, time, date
@@ -26,18 +27,20 @@ from django.contrib import messages
 from django.db import IntegrityError
 from core.services.matchmaking import calcular_afinidade
 from core.utils import cor_para_vendedor
-from django.contrib.auth.models import Permission
+from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
 from django.contrib.admin.views.decorators import staff_member_required
 from django.conf import settings
-from django.contrib.auth import logout
-from .utils import get_senha_rodanegocios, set_senha_rodanegocios, empresas_tem_relacao
+from core.utils import get_senha_rodanegocios, empresas_tem_relacao
 from django.db.models import Q
 from collections import defaultdict
 from django.utils.safestring import mark_safe
 from django.db.models import Prefetch
 from types import SimpleNamespace
+from django.core.mail import send_mail
+from django.contrib.auth import authenticate, login, logout
+
 
 # -----------------------------
 # Home
@@ -59,87 +62,113 @@ class HomeView(TemplateView):
 # ACESSO
 # -----------------------------
 # Configurações do sistema (ex: senha do Rodanegocios)
-def configuracao_sistema_view(request):
 
-    contexto = {}
+def configuracoes(request):
+    cfg = Configuracao.objects.first()
 
     if request.method == "POST":
-        senha_atual = request.POST.get("senha_atual", "").strip()
-        nova_senha = request.POST.get("nova_senha", "").strip()
-        confirmar = request.POST.get("confirmar", "").strip()
+        cfg.email_recuperacao = request.POST.get("email_recuperacao")
+        cfg.identificador_usuario = request.POST.get("identificador_usuario")
+        cfg.save()
 
-        if senha_atual != get_senha_rodanegocios():
-            contexto["erro"] = "Senha atual incorreta."
-        elif nova_senha != confirmar:
-            contexto["erro"] = "A nova senha e a confirmação não coincidem."
-        else:
-            set_senha_rodanegocios(nova_senha)
-            contexto["sucesso"] = "Senha alterada com sucesso!"
-
-    return render(request, "core/configuracao_sistema.html", contexto)
-
-
-from django.conf import settings
-
-
-def acesso_rodanegocios(request):
-    
-    # Sempre limpa o acesso ao abrir a página de senha
-    # request.session.pop("acesso_rodanegocios", None)
-    
-    if request.method == "POST":
-        senha_digitada = (request.POST.get("senha") or "").strip()
-        senha_correta = settings.RODANEGOCIOS_PASSWORD
-        
-        if senha_digitada == senha_correta:
-            request.session["acesso_rodanegocios"] = True
-            return redirect("core:home")  # ajuste para sua URL inicial
-
-        return render(request, "core/digite_senha.html", {
-            "erro": "Senha incorreta."
+        return render(request, "core/configuracoes.html", {
+            "cfg": cfg,
+            "mensagem": "Configurações atualizadas com sucesso."
         })
 
-    return render(request, "core/digite_senha.html")
+    return render(request, "core/configuracoes.html", {"cfg": cfg})
 
-# Função para sair (limpa a sessão de acesso)
-def sair(request):
-    # Remove o acesso especial
-    request.session.pop("acesso_rodanegocios", None)
-
-    # Faz logout do Django (caso esteja logado)
-    # logout(request)
-
-    # Redireciona para a tela de senha
-    return redirect("core:acesso_rodanegocios")
-
-# Função para resetar a senha do Rodanegocios
-def reset_senha_rodanegocios(request):
-    modo = request.GET.get("modo")  # pode ser "esqueci"
-    contexto = {"modo": modo}
-    
+# Tela para digitar a senha do Rodanegocios
+def login_view(request):
     if request.method == "POST":
-        senha_atual = request.POST.get("senha_atual", "").strip()
-        nova_senha = request.POST.get("nova_senha", "").strip()
-        confirmar = request.POST.get("confirmar", "").strip()
+        username = request.POST.get("username")
+        senha = request.POST.get("senha")
 
-        senha_correta = get_senha_rodanegocios()
-        
-        # 1. Se veio do "esqueci a senha", não exige senha atual
-        if modo != "esqueci" and senha_atual != senha_correta:
-            contexto["erro"] = "Senha atual incorreta."
-            return render(request, "core/reset_senha.html", contexto)
+        user = authenticate(request, username=username, password=senha)
 
-        # 2. Confere nova senha
-        if nova_senha != confirmar:
-            contexto["erro"] = "A nova senha e a confirmação não coincidem."
-            return render(request, "core/reset_senha.html", contexto)
+        if user is not None:
+            login(request, user)
+            return redirect("core:home")
 
-        # 3. Grava a nova senha
-        set_senha_rodanegocios(nova_senha)
-        contexto["sucesso"] = "Senha alterada com sucesso!"
-        return render(request, "core/reset_senha.html", contexto)
+        return render(request, "core/login.html", {
+            "erro": "Usuário ou senha inválidos."
+        })
 
-    return render(request, "core/reset_senha.html", contexto)
+    return render(request, "core/login.html")
+
+# Função para logout do usuário
+def logout_view(request):
+    logout(request)
+    return redirect("core:login")
+
+# Função para solicitar link de redefinição de senha
+def esqueci_senha(request):
+    if request.method == "POST":
+        email = request.POST.get("email")
+
+        try:
+            user = User.objects.get(email=email)
+        except User.DoesNotExist:
+            return render(request, "core/esqueci_senha.html", {
+                "erro": "Nenhum usuário encontrado com este e-mail."
+            })
+
+        # Gerar token
+        token = TokenResetSenha.gerar_token(user)
+
+        link = request.build_absolute_uri(
+            reverse("core:redefinir_senha", args=[token.token])
+        )
+
+        send_mail(
+            "Redefinição de senha",
+            f"Clique no link para redefinir sua senha:\n{link}",
+            "no-reply@rodanegocios.com",
+            [email],
+            fail_silently=False,
+        )
+
+        return render(request, "core/esqueci_senha.html", {
+            "mensagem": "Um link de redefinição foi enviado ao seu e-mail."
+        })
+
+    return render(request, "core/esqueci_senha.html")
+
+
+# Função para redefinir a senha usando o token
+def redefinir_senha(request, token):
+    try:
+        token_obj = TokenResetSenha.objects.get(token=token)
+    except TokenResetSenha.DoesNotExist:
+        return render(request, "core/redefinir_senha.html", {
+            "erro": "Token inválido."
+        })
+
+    if not token_obj.is_valid():
+        return render(request, "core/redefinir_senha.html", {
+            "erro": "Token expirado."
+        })
+
+    user = token_obj.user  # usuário vinculado ao token
+
+    if request.method == "POST":
+        nova = request.POST.get("nova_senha")
+        confirmar = request.POST.get("confirmar_senha")
+
+        if nova != confirmar:
+            return render(request, "core/redefinir_senha.html", {
+                "erro": "As senhas não coincidem."
+            })
+
+        user.set_password(nova)
+        user.save()
+
+        token_obj.delete()
+
+        return redirect("core:login")
+
+    return render(request, "core/redefinir_senha.html")
+
 
 # -----------------------------
 # EMPRESA 

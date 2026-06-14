@@ -1,0 +1,25 @@
+{% extends 'core/base.html' %}
+{% load static %}
+{% block content %}
+
+<h2>Esqueci minha senha</h2>
+
+{% if erro %}
+<p style="color:red">{{ erro }}</p>
+{% endif %}
+
+{% if mensagem %}
+<p style="color:green">{{ mensagem }}</p>
+{% endif %}
+
+<form method="POST" style="max-width: 400px;">
+    {% csrf_token %}
+    <div class="mb-3">
+        <label class="form-label">Seu e-mail</label>
+        <input type="email" name="email" class="form-control" required>
+    </div>
+
+    <button class="btn btn-primary w-100">Enviar link de redefinição</button>
+</form>
+
+{% endblock %}
