@@ -32,23 +32,35 @@
             <ul class="navbar-nav ms-auto">
 
                 {% if user.is_authenticated %}
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle text-primary fw-bold" href="#" role="button" data-bs-toggle="dropdown">
+                        👋 Olá, {{ user.username }}
+                    </a>
 
-                    <!-- Botão Configurações -->
-                    <li class="nav-item">
-                        <a href="{% url 'core:configuracoes' %}" 
-                        class="btn btn-secondary btn-sm ms-lg-3 mt-2 mt-lg-0">
-                            ⚙️ Configurações
-                        </a>
-                    </li>
+                    <ul class="dropdown-menu dropdown-menu-end">
 
-                    <!-- Botão Sair -->
-                    <li class="nav-item">
-                        <a href="{% url 'core:logout' %}" 
-                        class="btn btn-outline-danger btn-sm ms-lg-3 mt-2 mt-lg-0">
-                            Sair
-                        </a>
-                    </li>
+                        <li>
+                            <a class="dropdown-item" href="{% url 'core:configuracoes' %}">
+                                ⚙️ Configurações
+                            </a>
+                        </li>
 
+                        <li>
+                            <a class="dropdown-item" href="{% url 'core:password_change' %}">
+                                🔑 Alterar senha
+                            </a>
+                        </li>
+
+                        <li><hr class="dropdown-divider"></li>
+
+                        <li>
+                            <a class="dropdown-item text-danger" href="{% url 'core:logout' %}">
+                                🚪 Sair
+                            </a>
+                        </li>
+
+                    </ul>
+                </li>
                 {% endif %}
 
             </ul>

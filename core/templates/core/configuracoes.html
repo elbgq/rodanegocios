@@ -6,11 +6,11 @@
 <div class="container mt-4" style="max-width: 800px;">
 
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2>Configurações do Sistema</h2>
+        <h4 class="text-primary">Configurações do Sistema</h4>
 
         <div>
-            <a href="{% url 'core:logout' %}" class="btn btn-outline-danger btn-sm">
-                Sair
+            <a href="{% url 'core:home' %}" class="btn btn-outline-secondary btn-sm">
+                Voltar
             </a>
         </div>
     </div>
@@ -31,7 +31,7 @@
             Alterar minha senha
         </div>
         <div class="card-body">
-            <a href="{% url 'core:password_change' %}" class="btn btn-primary">
+            <a href="{% url 'core:password_change' %}" class="btn btn-outline-primary">
                 Alterar senha
             </a>
             <p class="mt-2 text-muted">
@@ -50,7 +50,7 @@
         </div>
         <div class="card-body">
 
-            <a href="/admin/auth/user/" class="btn btn-secondary">
+            <a href="/admin/auth/user/" class="btn btn-outline-secondary">
                 Abrir painel de usuários
             </a>
 

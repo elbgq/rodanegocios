@@ -13,7 +13,6 @@ from django.core.validators import MinLengthValidator, RegexValidator
 # ============================
 # Model para armazenar a senha do Rodanegocios
 class Configuracao(models.Model):
-    #senha_rodanegocios = models.CharField(max_length=255)
     email_recuperacao = models.EmailField(default="eloibgq@gmail.com")
     identificador_usuario = models.CharField(max_length=50)
     
