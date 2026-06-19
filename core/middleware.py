@@ -10,9 +10,11 @@ class RodanegociosProtectionMiddleware:
 
         caminho = request.path
         
-        # ---------------------------
-        # A) Libera as rotas para acesso
-        # ---------------------------
+        # Libera rotas da API
+        if caminho.startswith("/api/"):
+            return self.get_response(request)
+        
+        # Libera as rotas para acesso
         rotas_livres = [
             "/login/",
             "/esqueci-senha/",
@@ -21,6 +23,7 @@ class RodanegociosProtectionMiddleware:
             "/password_change/done/",
             "/admin/",
         ]
+        
         
         if any(caminho.startswith(r) for r in rotas_livres):
             return self.get_response(request)
@@ -31,4 +34,7 @@ class RodanegociosProtectionMiddleware:
         if not request.user.has_perm("core.pode_acessar_rodanegocios"):
             return redirect("core:login")
 
+        
+
+        
         return self.get_response(request)
