@@ -125,7 +125,7 @@ class Evento(models.Model):
         Empresa, through='EmpresaEvento',
         related_name='eventos_participantes'
 )
-
+ 
     def __str__(self):
         return f"{self.nome} - {self.data:%d/%m/%Y}"
 
@@ -195,7 +195,7 @@ class Mesa(models.Model):
         null=True,
         blank=True
     )
-
+ 
     vendedor = models.ForeignKey(
         Empresa,
         on_delete=models.CASCADE,
@@ -255,11 +255,3 @@ class RelacionamentoEmpresa(models.Model):
     def __str__(self):
         return f"{self.empresa_a} ↔ {self.empresa_b} ({self.tipo_relacao})"
 
-        
-'''
-    def save(self, *args, **kwargs):
-        # Garante que empresa_a_id < empresa_b_id para evitar duplicidade
-        if self.empresa_a_id > self.empresa_b_id:
-            self.empresa_a, self.empresa_b = self.empresa_b, self.empresa_a
-        super().save(*args, **kwargs)
-'''

@@ -6,16 +6,16 @@ class EmpresaSerializer(serializers.ModelSerializer):
     class Meta:
         model = Empresa
         fields = ['id', 'nome', 'modalidade']
-
+  
 class EventoSerializer(serializers.ModelSerializer):
     class Meta:
         model = Evento
-        fields = ['id', 'nome', 'data', 'local', 'descricao']
+        fields = ['id', 'nome', 'data', 'local']
 
 class RodadaSerializer(serializers.ModelSerializer):
     class Meta:
         model = Rodada
-        fields = ['id', 'nome', 'inicio_ro', 'fim_ro']
+        fields = ['id', 'nome', 'evento', 'inicio_ro', 'fim_ro']
 
 
 class MesaSerializer(serializers.ModelSerializer):
@@ -32,10 +32,9 @@ class MesaSerializer(serializers.ModelSerializer):
             'comprador',
             'vendedor',
             'rodada',
-            'status',
             'evento',
             'status'
         ]
     def get_evento(self, obj):
         return EventoSerializer(obj.rodada.evento).data
-    
+
