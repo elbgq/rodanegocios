@@ -32,7 +32,7 @@ SECRET_KEY = os.environ.get("SECRET_KEY")
 DEBUG = os.environ.get("DEBUG", "False") == "True"
 
 ALLOWED_HOSTS = [
-    'eloibgq.pythonanywhere.com',
+    'rodanegocios.onrender.com',
     '.pythonanywhere.com',
     'localhost',
     '127.0.0.1'
