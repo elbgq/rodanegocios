@@ -32,11 +32,11 @@ SECRET_KEY = os.environ.get("SECRET_KEY")
 DEBUG = os.environ.get("DEBUG", "False") == "True"
 
 ALLOWED_HOSTS = [
-    'rodanegocios-1.onrender.com/',
-    'render.com/',
-    'localhost',
-    '127.0.0.1'
+    "rodanegocios-1.onrender.com",
+    "localhost",
+    "127.0.0.1"
 ]
+
 CSRF_TRUSTED_ORIGINS = ['https://rodanegocios-1.onrender.com']
 
 
