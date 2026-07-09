@@ -32,8 +32,8 @@ SECRET_KEY = os.environ.get("SECRET_KEY")
 DEBUG = os.environ.get("DEBUG", "False") == "True"
 
 ALLOWED_HOSTS = [
-    'rodanegocios-1.onrender.com',
-    '.render.com',
+    'rodanegocios-1.onrender.com/',
+    'render.com/',
     'localhost',
     '127.0.0.1'
 ]
