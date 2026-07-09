@@ -34,7 +34,4 @@ class RodanegociosProtectionMiddleware:
         if not request.user.has_perm("core.pode_acessar_rodanegocios"):
             return redirect("core:login")
 
-        
-
-        
         return self.get_response(request)
