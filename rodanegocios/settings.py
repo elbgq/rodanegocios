@@ -53,6 +53,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'core.middleware.RodanegociosProtectionMiddleware',
@@ -131,12 +132,12 @@ USE_TZ = True
 
 # URL para acessar os arquivos
 STATIC_URL = '/static/'
-
-# Local onde o collectstatic vai reunir os arquivos para produção
-# STATICFILES_DIRS = [BASE_DIR / 'core' / 'static',]
-
 # Pastas adicionais onde o Django procura estáticos (ex: raiz do projeto)
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
+# Local onde o collectstatic vai reunir os arquivos para produção no Render
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
 
 EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 
