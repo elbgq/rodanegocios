@@ -24,18 +24,14 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ.get("SECRET_KEY")
+SECRET_KEY = os.environ.get("SECRET_KEY", "dev-secret-key")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get("DEBUG", "False") == "True"
 
-ALLOWED_HOSTS = [
-    "rodanegocios-1.onrender.com",
-    "localhost",
-    "127.0.0.1"
-]
+ALLOWED_HOSTS = ["*"]
 
-CSRF_TRUSTED_ORIGINS = ['https://rodanegocios-1.onrender.com']
+CSRF_TRUSTED_ORIGINS = ['https://rodanegocios.up.railway.app']
 
 
 # Application definition
@@ -55,12 +51,12 @@ MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'core.middleware.RodanegociosProtectionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
+    'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'core.middleware.RodanegociosProtectionMiddleware',
 ]
 
 ROOT_URLCONF = 'rodanegocios.urls'
@@ -92,18 +88,17 @@ WSGI_APPLICATION = 'rodanegocios.wsgi.application'
 DATABASE_URL = os.environ.get("DATABASE_URL")
 
 if DATABASE_URL:
-    # Produção (Render)
     DATABASES = {
-        'default': dj_database_url.config(default=DATABASE_URL)
+        "default": dj_database_url.parse(DATABASE_URL, conn_max_age=600)
     }
 else:
-    # Ambiente local (SQLite)
     DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': BASE_DIR / 'db.sqlite3',
+        "default": {
+            "ENGINE": "django.db.backends.sqlite3",
+            "NAME": BASE_DIR / "db.sqlite3",
         }
     }
+
 
 
 # Password validation

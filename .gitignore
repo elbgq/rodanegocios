@@ -7,6 +7,7 @@ media/
 
 # Database
 db.sqlite3
+dados_limpo3.json
 
 # Backup files
 *.bak
