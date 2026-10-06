@@ -31,7 +31,7 @@ DEBUG = os.environ.get("DEBUG", "False") == "True"
 
 ALLOWED_HOSTS = ["rodanegocios-production.up.railway.app", "localhost"]
 
-CSRF_TRUSTED_ORIGINS = ['https://rodanegocios-production.up.railway.app/']
+CSRF_TRUSTED_ORIGINS = ['https://rodanegocios-production.up.railway.app']
 
 
 # Application definition
