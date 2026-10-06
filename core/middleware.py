@@ -8,24 +8,24 @@ class RodanegociosProtectionMiddleware:
 
     def __call__(self, request):
 
-        caminho = request.path
+        caminho = request.path.rstrip("/")
         
         # Libera rotas da API
-        if caminho.startswith("/api/"):
+        if caminho.startswith("/api"):
             return self.get_response(request)
         
         # Libera as rotas para acesso
         rotas_livres = [
-            "/login/",
-            "/esqueci-senha/",
-            "/redefinir-senha/",
-            "/password_change/",
-            "/password_change/done/",
-            "/admin/",
+            "/login",
+            "/esqueci-senha",
+            "/redefinir-senha",
+            "/password_change",
+            "/password_change/done",
+            "/admin",
         ]
         
         
-        if any(caminho.startswith(r) for r in rotas_livres):
+        if caminho in rotas_livres:
             return self.get_response(request)
 
         if not request.user.is_authenticated:
