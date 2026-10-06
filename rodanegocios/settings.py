@@ -29,9 +29,9 @@ SECRET_KEY = os.environ.get("SECRET_KEY", "fallback-dev-key")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get("DEBUG", "False") == "True"
 
-ALLOWED_HOSTS = ["rodanegocios-production.up.railway.app", "localhost", "127.0.0.1"]
+ALLOWED_HOSTS = ["rodanegocios-production-bgq.up.railway.app", "localhost", "127.0.0.1"]
 
-CSRF_TRUSTED_ORIGINS = ['https://rodanegocios-production.up.railway.app']
+CSRF_TRUSTED_ORIGINS = ['https://rodanegocios-production-bgq.up.railway.app']
 
 
 # Application definition
