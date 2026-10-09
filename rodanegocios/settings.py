@@ -137,3 +137,15 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 
 LOGOUT_REDIRECT_URL = '/configuracoes'
+
+
+# API REST: exige autenticação JWT em todas as views (o token é obtido em /api/token/,
+# que continua livre por definição do próprio TokenObtainPairView).
+REST_FRAMEWORK = {
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        "rest_framework_simplejwt.authentication.JWTAuthentication",
+    ],
+    "DEFAULT_PERMISSION_CLASSES": [
+        "rest_framework.permissions.IsAuthenticated",
+    ],
+}
