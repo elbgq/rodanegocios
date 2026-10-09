@@ -6,7 +6,7 @@ __pycache__/
 media/
 
 # Database
-# db.sqlite3
+db.sqlite3
 dados_limpo3.json
 
 # Backup files
@@ -137,5 +137,3 @@ core/templates/core/solicitar_acesso.html
 core/templates/registration/
 estrutura_pastas.txt
 
-# Dump com dados reais (migração para o Postgres) — nunca commitar
-dump_rodanegocios.json

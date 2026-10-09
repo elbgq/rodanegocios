@@ -7,11 +7,13 @@ Desenvolvedor: Eloi. Este README foi criado em 09/10/2026, a partir da análise 
 
 - Python + Django 6.0 (`requirements.txt`), Django REST Framework + `simplejwt` (API),
   `django-localflavor` (campo CNPJ), `whitenoise` (estáticos), `gunicorn`.
-- Banco: **SQLite** local (`db.sqlite3`); em produção usa `DATABASE_URL` (via `dj-database-url`,
-  `psycopg2-binary` instalado para Postgres) quando a variável existe.
+- Banco: **SQLite** local (`db.sqlite3`); **em produção, Postgres do Railway** (desde 09/10/2026), lido de
+  `DATABASE_URL` (via `dj-database-url` + `psycopg2-binary`). Sem `DATABASE_URL`, o Django usa o SQLite.
 - Templates Django + CSS próprio (`core/static/core/css/style.css`). Sem framework JS.
-- Hospedagem: **Railway** (`Procfile`: `gunicorn rodanegocios.wsgi:application`). Domínio em
-  `settings.py` (`ALLOWED_HOSTS`/`CSRF_TRUSTED_ORIGINS`).
+- Hospedagem: **Railway** — serviço do app + serviço Postgres (com volume próprio). `Procfile`: roda
+  `migrate` e depois `gunicorn` na porta `$PORT` (o domínio público em *Settings → Networking* deve apontar
+  para a mesma porta, hoje 8080). Domínio em `settings.py` (`ALLOWED_HOSTS`/`CSRF_TRUSTED_ORIGINS`).
+  Variáveis do app: `SECRET_KEY`, `DEBUG`, `DATABASE_URL` (referência ao Postgres, rede privada).
 - Windows, VS Code, ambiente virtual em `venv/`.
 
 ## Comandos
@@ -69,8 +71,12 @@ limpos. Banco local: 153 empresas, 153 representantes, 2 eventos, 26 rodadas, 91
    comentados, e o middleware libera `/api` — dados de empresas, agendas e mesas ficam públicos.
 2. **Dados no Git:** `db.sqlite3` e `dados*.json` estão versionados (o `.gitignore` tem `db.sqlite3`
    comentado). Contêm dados reais de empresas/representantes (e hashes de senha dos usuários).
-3. **Banco no Railway:** confirmar se produção usa `DATABASE_URL` (Postgres) ou o SQLite do contêiner —
-   se for SQLite sem volume, os dados se perdem a cada deploy (ver `/app/db.sqlite3` no console do Railway).
+3. ✅ **Corrigido em 09/10/2026:** a produção usava o SQLite do contêiner (`/app/db.sqlite3`), que se perde a
+   cada deploy. Criado um serviço Postgres no Railway, `DATABASE_URL` apontando para ele, `Procfile` com
+   `migrate` antes do `gunicorn` e dados carregados (3 usuários, 153 empresas, 910 mesas, conferidos por SQL).
+   A carga foi feita de dentro do contêiner do app (`env -u DATABASE_URL ... dumpdata` do SQLite do deploy
+   seguido de `loaddata` no Postgres), porque pelo TCP Proxy a conexão caía; o proxy foi removido depois.
+   Obs.: o `db.sqlite3` versionado já não é usado em produção.
 4. **Versão do Python:** `.python-version` diz 3.11.0, mas Django 6.0 exige Python ≥ 3.12; conferir a versão
    realmente usada no venv/Railway. (O próprio `.python-version` consta no `.gitignore`.)
 5. **Estáticos:** `STATICFILES_STORAGE` foi removido do Django (usar `STORAGES`); o WhiteNoise com manifest
